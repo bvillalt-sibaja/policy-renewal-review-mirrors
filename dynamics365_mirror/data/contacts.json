@@ -1,0 +1,91 @@
+{
+  "0000001": {
+    "id": "0000001",
+    "policy_number": "0000001",
+    "contact_name": "Mr J Doe",
+    "email": "j.doe@sample-insurer-demo.invalid",
+    "scenario_label": "Straightforward Renewal",
+    "occupation_details": "Occupation: Cabinet Maker (self-employed). Trading for 9 years. No prior insurance declines or special terms recorded. Works from a single registered workshop address, no home-working element.",
+    "building_and_contents": "Building: Detached single-storey workshop, brick construction, tiled roof, built 1998. Sum insured (buildings): GBP 185,000. Contents/stock sum insured: GBP 42,500. No subsidence history. Burglar alarm fitted, not monitored.",
+    "intermediary": {
+      "name": "Sample Broker Services Ltd",
+      "reference": "SBS-00114",
+      "contact": "Ms A Smith",
+      "phone": "0300 555 0114"
+    },
+    "alarm_requirement_note": "CRM Note - Security Requirement: Intruder alarm to be maintained in full working order and set whenever the premises are unattended. No police response level currently specified on file; confirm at next renewal review.",
+    "documents": [
+      {
+        "name": "Renewal_Schedule_0000001.pdf",
+        "uploaded": "2026-08-01T09:14:00",
+        "size_kb": 212
+      },
+      {
+        "name": "Statement_of_Fact_0000001.pdf",
+        "uploaded": "2026-08-01T09:15:30",
+        "size_kb": 88
+      },
+      {
+        "name": "Occupation_Details_0000001.docx",
+        "uploaded": "2026-08-02T11:02:00",
+        "size_kb": 34
+      }
+    ],
+    "timeline_notes": [
+      {
+        "title": "Renewal review started",
+        "body": "Renewal case opened for review ahead of expiry. No outstanding underwriting referrals at this stage.",
+        "author": "Mr J Doe (System)",
+        "created": "2026-08-01T09:10:00"
+      },
+      {
+        "title": "Occupation details confirmed",
+        "body": "Occupation and trading details reconfirmed with policyholder by phone, no changes since last renewal.",
+        "author": "Ms A Smith",
+        "created": "2026-08-02T14:22:00"
+      }
+    ]
+  },
+  "0198766": {
+    "id": "0198766",
+    "policy_number": "0198766",
+    "contact_name": "Mrs A Doe",
+    "email": "a.doe@sample-insurer-demo.invalid",
+    "scenario_label": "Complaint Handling",
+    "occupation_details": "Occupation: Antiques Dealer / Restorer (self-employed, sole trader). Trading for 14 years. Workshop and retail showroom on same site. High-value stock handled regularly; additional fine art cover in place.",
+    "building_and_contents": "Building: Converted Victorian mill building, stone construction, slate roof, built approx. 1880, listed grade II. Sum insured (buildings): GBP 610,000. Contents/stock (incl. fine art extension): GBP 275,000. Flood risk noted as low. Full police response intruder alarm required per underwriting referral.",
+    "intermediary": {
+      "name": "Sample Broker Services Ltd",
+      "reference": "SBS-00877",
+      "contact": "Mr J Doe",
+      "phone": "0300 555 0877"
+    },
+    "alarm_requirement_note": "CRM Note - Security Requirement (Alarm): Full police response required. Remote dual-path signalling to an NSI/SSAIB-approved Alarm Receiving Centre (ARC) is mandatory. Confirm current maintenance certificate before renewal terms are confirmed. Complaint on file relates to a delay in this confirmation being processed at last renewal.",
+    "documents": [
+      {
+        "name": "Complaint_Acknowledgement_0198766.pdf",
+        "uploaded": "2026-08-10T10:00:00",
+        "size_kb": 61
+      },
+      {
+        "name": "Fine_Art_Schedule_0198766.pdf",
+        "uploaded": "2026-08-11T13:45:00",
+        "size_kb": 145
+      }
+    ],
+    "timeline_notes": [
+      {
+        "title": "Complaint logged",
+        "body": "Policyholder raised a complaint regarding delay in confirming alarm certification requirements ahead of renewal. Escalated to Customer Care.",
+        "author": "Ms A Smith",
+        "created": "2026-08-10T10:05:00"
+      },
+      {
+        "title": "Alarm requirement chased",
+        "body": "Requested current NSI/SSAIB maintenance certificate from policyholder's alarm company; awaiting response.",
+        "author": "Mr J Doe",
+        "created": "2026-08-12T09:30:00"
+      }
+    ]
+  }
+}

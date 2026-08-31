@@ -1,0 +1,347 @@
+body {
+  font-family: "Segoe UI", -apple-system, Arial, sans-serif;
+  margin: 0;
+  background: #faf9f8;
+  color: #201f1e;
+  font-size: 14px;
+}
+
+.app-header {
+  background: #ffffff;
+  color: #201f1e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  border-bottom: 1px solid #edebe9;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  color: #605e5c;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 2px;
+}
+
+.icon-button:hover {
+  background: #f3f2f1;
+}
+
+.app-title {
+  color: #201f1e;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-title::before {
+  content: "◆";
+  color: #0F6CBD;
+  font-size: 16px;
+}
+
+.global-search-form {
+  display: flex;
+  gap: 0;
+}
+
+.global-search-form input {
+  padding: 7px 10px;
+  min-width: 280px;
+  border: 1px solid #c8c6c4;
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.global-search-form input:focus {
+  outline: 2px solid #0F6CBD;
+  outline-offset: -1px;
+}
+
+.global-search-form button {
+  padding: 7px 14px;
+  cursor: pointer;
+  border: 1px solid #0F6CBD;
+  background: #0F6CBD;
+  color: #ffffff;
+  border-radius: 0 2px 2px 0;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.global-search-form button:hover {
+  background: #0A4A82;
+}
+
+.side-menu {
+  background: #ffffff;
+  border-right: 1px solid #edebe9;
+  border-bottom: 1px solid #edebe9;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 240px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.12);
+  z-index: 10;
+  border-radius: 0 0 4px 0;
+}
+
+.side-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.side-menu li a {
+  display: block;
+  padding: 9px 18px;
+  color: #201f1e;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.side-menu li a:hover {
+  background: #f3f2f1;
+}
+
+.app-main {
+  max-width: 980px;
+  margin: 20px auto;
+  padding: 0 16px 48px 16px;
+}
+
+.app-footer {
+  text-align: center;
+  font-size: 12px;
+  color: #a19f9d;
+  padding: 18px;
+}
+
+.flash-messages {
+  margin-bottom: 16px;
+}
+
+.flash {
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  border-left: 3px solid transparent;
+}
+
+.flash-success { background: #dff6dd; color: #0b6a0b; border-color: #0b6a0b; }
+.flash-info { background: #e5f2fb; color: #0e4775; border-color: #0e4775; }
+.flash-error { background: #fde7e9; color: #a80000; border-color: #a80000; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #edebe9;
+  background: #f3f2f1;
+  font-weight: 600;
+  font-size: 12px;
+  color: #484644;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.data-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #edebe9;
+}
+
+.data-table tr:hover td {
+  background: #f8f7f6;
+}
+
+.contact-header {
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #edebe9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+#contact-name-heading {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#contact-name-heading::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0F6CBD, #464775);
+}
+
+.contact-meta {
+  display: flex;
+  gap: 24px;
+  margin: 8px 0 14px 0;
+  color: #605e5c;
+  font-size: 13px;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.contact-actions button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #c8c6c4;
+  background: #ffffff;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #201f1e;
+}
+
+.contact-actions button:hover {
+  background: #f3f2f1;
+  border-color: #a19f9d;
+}
+
+#btn-save-and-close, #btn-save-and-continue {
+  background: #0F6CBD;
+  color: #ffffff;
+  border-color: #0F6CBD;
+}
+
+#btn-save-and-close:hover, #btn-save-and-continue:hover {
+  background: #0A4A82;
+  border-color: #0A4A82;
+}
+
+.record-section {
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #edebe9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.record-section > h2, .record-section > h3 {
+  margin-top: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #323130;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f3f2f1;
+  margin-bottom: 14px;
+}
+
+.field-group {
+  margin-bottom: 14px;
+}
+
+.field-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #605e5c;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.field-readonly {
+  background: #faf9f8;
+  border: 1px solid #edebe9;
+  padding: 9px 12px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.field-alarm-note {
+  border-left: 3px solid #D83B01;
+}
+
+.document-list, .timeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.document-item, .timeline-item {
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #fdfdfc;
+}
+
+.doc-meta, .timeline-item-meta {
+  display: block;
+  font-size: 12px;
+  color: #605e5c;
+  margin-top: 2px;
+}
+
+.timeline-item-title {
+  font-weight: 600;
+  color: #201f1e;
+}
+
+.upload-panel {
+  margin-top: 8px;
+}
+
+.note-form {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #edebe9;
+}
+
+.note-form textarea, .note-form input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #c8c6c4;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.note-form textarea:focus, .note-form input[type="text"]:focus {
+  outline: 2px solid #0F6CBD;
+  outline-offset: -1px;
+}

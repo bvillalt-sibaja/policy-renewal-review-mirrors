@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Intermediary -- {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block content %}
+  <section id="section-intermediary-detail" class="record-section">
+    <h1>Intermediary</h1>
+    <div class="field-group">
+      <label>Name</label>
+      <div id="intermediary-name" class="field-readonly">{{ contact.intermediary.name }}</div>
+    </div>
+    <div class="field-group">
+      <label>Reference</label>
+      <div id="intermediary-reference" class="field-readonly">{{ contact.intermediary.reference }}</div>
+    </div>
+    <div class="field-group">
+      <label>Contact</label>
+      <div id="intermediary-contact" class="field-readonly">{{ contact.intermediary.contact }}</div>
+    </div>
+    <div class="field-group">
+      <label>Phone</label>
+      <div id="intermediary-phone" class="field-readonly">{{ contact.intermediary.phone }}</div>
+    </div>
+    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact">Back to Contact</a>
+  </section>
+{% endblock %}

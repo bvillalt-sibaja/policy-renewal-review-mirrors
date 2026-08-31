@@ -1,0 +1,26 @@
+[
+  {
+    "id": "msg-001",
+    "sender_name": "Alex Renewals",
+    "sender_email": "alex.renewals@sampleclientbroker.test",
+    "subject": "Renewal Request - Policy 02/HHR/0000001",
+    "received": "2026-08-25 09:14",
+    "body": "Hi Team,\n\nPlease could you process the routine renewal for the policy below? No changes to cover are required and the client is happy to proceed on the same terms as last year.\n\nPolicyholder: Mr J Doe\nPolicy Number: 02/HHR/0000001\nRenewal Date: 15/09/2026\n\nMany thanks,\nAlex Renewals\nSample Client Broker Ltd"
+  },
+  {
+    "id": "msg-002",
+    "sender_name": "Jamie Client Care",
+    "sender_email": "jamie.clientcare@sampleclientbroker.test",
+    "subject": "COMPLAINT - Mr J Doe & Mrs A Doe - 02/HHR/0198766",
+    "received": "2026-08-26 11:02",
+    "body": "Hi Team,\n\nPlease be aware that the client has raised a formal complaint and we understand legal proceedings are now ongoing in relation to this policy.\n\nPolicyholder: Mr J Doe & Mrs A Doe\nPolicy Number: 02/HHR/0198766\nReference: CRM:00000000001\n\nCould you confirm this has been routed to the complaint-handling team rather than the standard renewal process?\n\nRegards,\nJamie Client Care\nSample Client Broker Ltd"
+  },
+  {
+    "id": "msg-003",
+    "sender_name": "Sample Insurer IT",
+    "sender_email": "it.notices@sampleinsurer.test",
+    "subject": "FYI - Scheduled system maintenance this weekend",
+    "received": "2026-08-27 16:40",
+    "body": "Hi all,\n\nJust a heads up that the policy admin system will be unavailable Saturday 07:00-09:00 for scheduled maintenance.\n\nNo action is needed on your part.\n\nThanks,\nSample Insurer IT"
+  }
+]

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Contact: {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block content %}
+  <section id="contact-header" class="contact-header">
+    <h1 id="contact-name-heading">Contact: {{ contact.contact_name }}</h1>
+    <div class="contact-meta">
+      <span>Policy Number: <strong id="contact-policy-number">{{ contact.policy_number }}</strong></span>
+      <span>Scenario: <strong id="contact-scenario-label">{{ contact.scenario_label }}</strong></span>
+    </div>
+
+    <div class="contact-actions">
+      <form id="form-select-customer-care" action="{{ url_for('select_customer_care', contact_id=contact.id) }}" method="post" style="display:inline;">
+        <button type="submit" id="btn-customer-care">Customer Care</button>
+      </form>
+
+      <form id="form-save-and-close" action="{{ url_for('save_and_close', contact_id=contact.id) }}" method="post" style="display:inline;">
+        <button type="submit" id="btn-save-and-close">Save &amp; Close</button>
+      </form>
+
+      <form id="form-save-and-continue" action="{{ url_for('save_and_continue', contact_id=contact.id) }}" method="post" style="display:inline;">
+        <button type="submit" id="btn-save-and-continue">Save and Continue</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="section-general-info" class="record-section">
+    <h2>General Information</h2>
+    <div class="field-group">
+      <label for="field-occupation-details">Occupation Details</label>
+      <div id="field-occupation-details" class="field-readonly">{{ contact.occupation_details }}</div>
+    </div>
+    <div class="field-group">
+      <label for="field-building-contents">Building and Contents</label>
+      <div id="field-building-contents" class="field-readonly">{{ contact.building_and_contents }}</div>
+    </div>
+    <div class="field-group">
+      <label for="field-alarm-requirement-note">CRM Note &mdash; Security / Alarm Requirement</label>
+      <div id="field-alarm-requirement-note" class="field-readonly field-alarm-note">{{ contact.alarm_requirement_note }}</div>
+    </div>
+  </section>
+
+  <section id="section-documents" class="record-section">
+    <h2>Documents</h2>
+
+    <form id="form-upload-document" action="{{ url_for('upload_document', contact_id=contact.id) }}" method="post" enctype="multipart/form-data">
+      <button type="button" id="btn-upload-document" onclick="showUploadPanel()">Upload</button>
+      <div id="upload-panel" class="upload-panel" hidden>
+        <input type="file" id="document-upload-input" name="document_file">
+        <button type="submit" id="btn-upload-ok">OK</button>
+      </div>
+    </form>
+
+    <ul id="document-list" class="document-list">
+      {% for doc in documents %}
+      <li id="doc-item-{{ loop.index0 }}" class="document-item">
+        <span class="doc-name">{{ doc.name }}</span>
+        <span class="doc-meta">uploaded {{ doc.uploaded }} &middot; {{ doc.size_kb }} KB</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% if not showing_all_docs and total_documents > 1 %}
+      <a id="btn-load-more-documents" href="{{ url_for('contact_view', contact_id=contact.id, docs='all') }}">Load More Documents ({{ total_documents - documents|length }} more)</a>
+    {% endif %}
+  </section>
+
+  <section id="section-timeline" class="record-section">
+    <h2>Timeline</h2>
+
+    <form id="form-timeline-filter" action="{{ url_for('contact_view', contact_id=contact.id) }}" method="get">
+      <label for="select-timeline-filter">Related</label>
+      <select id="select-timeline-filter" name="filter" onchange="this.form.submit()">
+        <option value="no_filter" {% if timeline_filter == 'no_filter' %}selected{% endif %}>No Filter Applied</option>
+        <option value="notes" {% if timeline_filter == 'notes' %}selected{% endif %}>Notes</option>
+      </select>
+    </form>
+
+    <ul id="timeline-note-list" class="timeline-list">
+      {% for note in timeline_notes %}
+      <li id="timeline-note-{{ loop.index0 }}" class="timeline-item">
+        <div class="timeline-item-title">{{ note.title }}</div>
+        <div class="timeline-item-body">{{ note.body }}</div>
+        <div class="timeline-item-meta">{{ note.author }} &middot; {{ note.created }}{% if note.attachment %} &middot; attachment: {{ note.attachment }}{% endif %}</div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% if not showing_all_notes and total_notes > 1 %}
+      <a id="btn-view-more-timeline" href="{{ url_for('contact_view', contact_id=contact.id, notes='all', filter=timeline_filter) }}">View More</a>
+    {% endif %}
+
+    <div>
+      <button type="button" id="btn-enter-note" onclick="showNoteForm()">Enter a Note</button>
+    </div>
+
+    <form id="form-add-note" class="note-form" action="{{ url_for('add_note', contact_id=contact.id) }}" method="post" enctype="multipart/form-data" {% if not show_note_form %}hidden{% endif %}>
+      <div class="field-group">
+        <label for="note-title-input">Title</label>
+        <input type="text" id="note-title-input" name="note_title" placeholder="Note title">
+      </div>
+      <div class="field-group">
+        <label for="note-body-textarea">Note</label>
+        <textarea id="note-body-textarea" name="note_body" rows="5" placeholder="Enter note text"></textarea>
+      </div>
+      <div class="field-group">
+        <label for="note-attachment-input">Add an Attachment</label>
+        <input type="file" id="note-attachment-input" name="note_attachment">
+      </div>
+      <button type="submit" id="btn-add-note-and-close">Add Note and Close</button>
+    </form>
+  </section>
+
+  <section id="section-related" class="record-section">
+    <h2>Related</h2>
+    <a href="{{ url_for('intermediary_view', contact_id=contact.id) }}" id="link-intermediary">Intermediary: {{ contact.intermediary.name }}</a>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function showUploadPanel() {
+    document.getElementById('upload-panel').hidden = false;
+  }
+  function showNoteForm() {
+    document.getElementById('form-add-note').hidden = false;
+  }
+  // If the server rendered the page with enter_note=1 or docs shown, make sure
+  // the corresponding panels are visible on load too.
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('enter_note') === '1') {
+      showNoteForm();
+    }
+  })();
+</script>
+{% endblock %}

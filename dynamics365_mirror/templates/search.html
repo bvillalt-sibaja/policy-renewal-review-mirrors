@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Search -- Sample Insurer Dynamics 365 (Mirror){% endblock %}
+{% block content %}
+  <h1>Global Search</h1>
+  <p>Type a policy / reference number in the search box above and press Enter (or click Search) to open the matching contact record.</p>
+
+  <h2>Seeded demo records</h2>
+  <table id="table-seed-contacts" class="data-table">
+    <thead>
+      <tr>
+        <th>Policy Number</th>
+        <th>Contact Name</th>
+        <th>Scenario</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for policy_number, contact in contacts.items() %}
+      <tr id="row-contact-{{ contact.id }}">
+        <td>{{ policy_number }}</td>
+        <td>{{ contact.contact_name }}</td>
+        <td>{{ contact.scenario_label }}</td>
+        <td><a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-open-contact-{{ contact.id }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

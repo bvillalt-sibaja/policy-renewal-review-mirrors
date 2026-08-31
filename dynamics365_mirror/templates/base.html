@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Sample Insurer -- Dynamics 365 (Mirror){% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header id="app-header" class="app-header">
+    <div class="app-header-left">
+      <button type="button" id="btn-toggle-menu" class="icon-button" aria-label="Toggle Menu" onclick="toggleSideMenu()">&#9776;</button>
+      <a href="{{ url_for('home') }}" id="link-app-title" class="app-title">Sample Insurer &mdash; Dynamics 365 (Mirror)</a>
+    </div>
+    <form id="global-search-form" class="global-search-form" action="{{ url_for('search') }}" method="get">
+      <input
+        type="text"
+        id="global-search-input"
+        name="policy_number"
+        placeholder="Search policy / reference number"
+        autocomplete="off"
+      >
+      <button type="submit" id="global-search-button">Search</button>
+    </form>
+  </header>
+
+  <nav id="side-menu" class="side-menu" hidden>
+    <ul>
+      <li><a href="{{ url_for('home') }}" id="menu-link-home">Home</a></li>
+      <li><a href="#" id="menu-link-contacts" onclick="return false;">Contacts</a></li>
+      <li><a href="#" id="menu-link-cases" onclick="return false;">Cases (not implemented in mirror)</a></li>
+      <li><a href="#" id="menu-link-settings" onclick="return false;">Settings (not implemented in mirror)</a></li>
+    </ul>
+  </nav>
+
+  <main class="app-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="flash-messages" class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}" id="flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="app-footer">
+    Sample Insurer Ltd &mdash; local Dynamics 365 mirror for RPA testing only. Not a real CRM.
+  </footer>
+
+  <script>
+    function toggleSideMenu() {
+      var menu = document.getElementById('side-menu');
+      menu.hidden = !menu.hidden;
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
