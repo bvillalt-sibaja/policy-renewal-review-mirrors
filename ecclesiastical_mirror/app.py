@@ -11,7 +11,7 @@ or system despite the reused name.
 
 Run with:
     ~/rpa-env/bin/python app.py
-Serves on http://127.0.0.1:5060 by default (override with PORT env var).
+Serves on http://127.0.0.1:5063 by default (override with PORT env var).
 """
 import os
 
@@ -43,5 +43,5 @@ def search():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5060"))
+    port = int(os.environ.get("PORT", "5063"))
     app.run(host="127.0.0.1", port=port, debug=False)

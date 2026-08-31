@@ -12,7 +12,7 @@ search or a real person.
 
 Run with:
     ~/rpa-env/bin/python app.py
-Serves on http://127.0.0.1:5061 by default (override with PORT env var).
+Serves on http://127.0.0.1:5062 by default (override with PORT env var).
 """
 import os
 
@@ -60,5 +60,5 @@ def news_tab():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5061"))
+    port = int(os.environ.get("PORT", "5062"))
     app.run(host="127.0.0.1", port=port, debug=False)
