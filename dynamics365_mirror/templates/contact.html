@@ -53,7 +53,7 @@
     <ul id="document-list" class="document-list">
       {% for doc in documents %}
       <li id="doc-item-{{ loop.index0 }}" class="document-item">
-        <a href="{{ url_for('document_view', contact_id=contact.id, doc_index=loop.index0) }}" class="doc-name">{{ doc.name }}</a>
+        <a href="{{ url_for('document_view', contact_id=contact.id, doc_index=loop.index0) }}" id="doc-link-{{ loop.index0 }}" class="doc-name">{{ doc.name }}</a>
         <span class="doc-meta">uploaded {{ doc.uploaded }} &middot; {{ doc.size_kb }} KB</span>
       </li>
       {% endfor %}
