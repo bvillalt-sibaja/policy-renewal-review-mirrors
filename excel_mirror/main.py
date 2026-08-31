@@ -55,6 +55,7 @@ class ExcelMirror:
         self.path = path
         self.sheet_name = sheet_name
         self.selected = (1, 1)
+        self.view_start = 1
 
         root.title(f"{path.split('/')[-1]} - Excel Mirror")
         # Fixed size AND position every launch - same reasoning as the Outlook
@@ -171,8 +172,13 @@ class ExcelMirror:
         self.ws = self.wb[self.sheet_name] if self.sheet_name else self.wb.active
 
     def _render_grid(self):
+        # Renders a sliding GRID_ROWS-row window starting at self.view_start, not
+        # always rows 1-GRID_ROWS - real Excel scrolls the viewport to reveal
+        # whatever cell the Name Box navigates to, rather than refusing to go
+        # there (confirmed live: a real form's cells can sit well past row 25,
+        # e.g. this project's Pass Back Form.xlsx uses cells past row 200).
         self.tree.delete(*self.tree.get_children())
-        for r in range(1, GRID_ROWS + 1):
+        for r in range(self.view_start, self.view_start + GRID_ROWS):
             values = []
             for c in range(1, GRID_COLS + 1):
                 cell = self.ws.cell(row=r, column=c)
@@ -208,8 +214,13 @@ class ExcelMirror:
         if rc is None:
             return
         row, col = rc
-        if row < 1 or col < 1 or row > GRID_ROWS or col > GRID_COLS:
+        if row < 1 or col < 1 or col > GRID_COLS:
             return
+        if row < self.view_start or row >= self.view_start + GRID_ROWS:
+            # Scroll the viewport to bring the target row into view, centered,
+            # matching real Excel's Name-Box-navigates-and-scrolls behavior.
+            self.view_start = max(1, row - GRID_ROWS // 2)
+            self._render_grid()
         self._select_cell(row, col)
         self.formula_bar.focus_set()
 
