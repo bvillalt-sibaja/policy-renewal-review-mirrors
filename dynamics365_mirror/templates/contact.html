@@ -114,7 +114,7 @@
     <h2>Related</h2>
     <a href="{{ url_for('intermediary_view', contact_id=contact.id) }}" id="link-intermediary">Intermediary: {{ contact.intermediary.name }}</a>
     <br>
-    <a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" target="_blank" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a>
+    <a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a>
   </section>
 {% endblock %}
 
