@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Pseudo Activity -- {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block content %}
+  <section id="section-pseudo-detail" class="record-section">
+    <h1>{{ contact.related_pseudo.label }}</h1>
+    <div id="pseudo-summary" class="field-readonly">{{ contact.related_pseudo.summary }}</div>
+    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact">Back to Contact</a>
+  </section>
+{% endblock %}

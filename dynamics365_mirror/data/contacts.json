@@ -29,6 +29,12 @@
         "name": "Occupation_Details_0000001.docx",
         "uploaded": "2026-08-02T11:02:00",
         "size_kb": 34
+      },
+      {
+        "name": "UW_Pathway_Report_0000001.pdf",
+        "uploaded": "2026-08-03T10:00:00",
+        "size_kb": 156,
+        "content": "UW Pathway Report - Policy 02 HHR 0000001. Insured: Mr J Doe. Risk Name: Registered Workshop Premises. As Is / To Be Summary: Risk Acceptability - Good. Niche - Commercial/Trade (cabinet making). Occupation reviewed and consistent with prior renewal, no adverse change. Recommend standard terms, no additional referral required."
       }
     ],
     "timeline_notes": [
@@ -44,7 +50,11 @@
         "author": "Ms A Smith",
         "created": "2026-08-02T14:22:00"
       }
-    ]
+    ],
+    "related_pseudo": {
+      "label": "Pseudo Activity Record",
+      "summary": "Pseudo activity: no additional related activity recorded for this risk."
+    }
   },
   "0198766": {
     "id": "0198766",
@@ -71,6 +81,12 @@
         "name": "Fine_Art_Schedule_0198766.pdf",
         "uploaded": "2026-08-11T13:45:00",
         "size_kb": 145
+      },
+      {
+        "name": "UW_Pathway_Report_0198766.pdf",
+        "uploaded": "2026-08-11T10:00:00",
+        "size_kb": 142,
+        "content": "UW Pathway Report - Policy 02 HHR 0198766. Insured: Mr J Doe & Mrs A Doe. Risk Name: Fine Art & Private Client residence. As Is / To Be Summary: Risk Acceptability - Referral. Niche - Fine Art / High Net Worth. Open complaint noted on file - recommend holding renewal terms pending complaint resolution before confirming."
       }
     ],
     "timeline_notes": [
@@ -86,6 +102,10 @@
         "author": "Mr J Doe",
         "created": "2026-08-12T09:30:00"
       }
-    ]
+    ],
+    "related_pseudo": {
+      "label": "Pseudo Activity Record",
+      "summary": "Pseudo activity: no additional related activity recorded for this risk."
+    }
   }
 }

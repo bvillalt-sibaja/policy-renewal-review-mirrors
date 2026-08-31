@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Map View (Mirror)</title>
+  <style>
+    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #f2f4f3; color: #1b1b1b; font-size: 14px; }
+    .toolbar { background: #ffffff; border-bottom: 1px solid #d8dbd9; padding: 10px 16px; display: flex; gap: 10px; align-items: center; }
+    #map-search-input { flex: 1; max-width: 420px; padding: 7px 10px; border: 1px solid #b7bcb9; border-radius: 3px; font-size: 14px; }
+    button { padding: 7px 14px; border: 1px solid #4a7a4a; background: #4a7a4a; color: #fff; border-radius: 3px; cursor: pointer; font-size: 13px; }
+    button.secondary { background: #ffffff; color: #2f4f2f; border-color: #b7bcb9; }
+    button.active { background: #2f4f2f; border-color: #2f4f2f; }
+    .map-area { margin: 16px; height: 420px; border-radius: 4px; position: relative; overflow: hidden;
+      background: repeating-linear-gradient(45deg, #dfe7df, #dfe7df 10px, #d3ddd3 10px, #d3ddd3 20px); }
+    .map-area.hybrid { background: repeating-linear-gradient(45deg, #37503a, #37503a 10px, #2c412e 10px, #2c412e 20px); }
+    #map-pin { position: absolute; top: 45%; left: 48%; font-size: 32px; }
+    .overlay-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 3px; font-size: 12px; }
+    .panel { margin: 0 16px 16px; background: #fff; border: 1px solid #d8dbd9; border-radius: 4px; padding: 12px 16px; }
+    .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: #555; margin: 0 0 8px; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <form id="form-search-map" action="{{ url_for('search') }}" method="post" style="display:flex; gap:10px; flex:1;">
+      <input type="text" id="map-search-input" name="address" placeholder="Search by address" value="{{ state.address }}" autocomplete="off">
+      <button type="submit" id="btn-search-map">Search</button>
+    </form>
+    <form id="form-ad-hoc" action="{{ url_for('ad_hoc_analysis') }}" method="post">
+      <button type="submit" id="btn-ad-hoc-analysis" class="secondary {{ 'active' if state.ad_hoc_analysis else '' }}">Ad Hoc Analysis</button>
+    </form>
+    <form id="form-hybrid" action="{{ url_for('hybrid_view') }}" method="post">
+      <button type="submit" id="btn-hybrid-view" class="secondary {{ 'active' if state.hybrid_view else '' }}">Hybrid</button>
+    </form>
+  </div>
+
+  <div id="map-canvas" class="map-area {{ 'hybrid' if state.hybrid_view else '' }}">
+    {% if state.address %}<div id="map-pin">&#128205;</div>{% endif %}
+    {% if state.overlay %}<div id="overlay-badge" class="overlay-badge">Overlay: Flood Risk</div>{% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Overview</h2>
+    <form id="form-overlay" action="{{ url_for('overlay') }}" method="post">
+      <button type="submit" id="btn-select-overlay" class="secondary {{ 'active' if state.overlay else '' }}">Select Overlay</button>
+    </form>
+  </div>
+</body>
+</html>

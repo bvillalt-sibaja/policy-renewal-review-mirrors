@@ -53,7 +53,7 @@
     <ul id="document-list" class="document-list">
       {% for doc in documents %}
       <li id="doc-item-{{ loop.index0 }}" class="document-item">
-        <span class="doc-name">{{ doc.name }}</span>
+        <a href="{{ url_for('document_view', contact_id=contact.id, doc_index=loop.index0) }}" class="doc-name">{{ doc.name }}</a>
         <span class="doc-meta">uploaded {{ doc.uploaded }} &middot; {{ doc.size_kb }} KB</span>
       </li>
       {% endfor %}
@@ -113,6 +113,8 @@
   <section id="section-related" class="record-section">
     <h2>Related</h2>
     <a href="{{ url_for('intermediary_view', contact_id=contact.id) }}" id="link-intermediary">Intermediary: {{ contact.intermediary.name }}</a>
+    <br>
+    <a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" target="_blank" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a>
   </section>
 {% endblock %}
 

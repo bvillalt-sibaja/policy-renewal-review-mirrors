@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Code Look Up (Mirror)</title>
+  <style>
+    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #eef2f6; color: #1b2733; font-size: 14px; }
+    .header { background: #0b3d66; color: #fff; padding: 14px 20px; font-size: 16px; font-weight: 600; }
+    .panel { max-width: 480px; margin: 40px auto; background: #fff; border: 1px solid #d3dbe2; border-radius: 6px; padding: 24px 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    label { display: block; font-size: 13px; color: #444; margin-bottom: 6px; }
+    input[type=text] { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #b7c2cc; border-radius: 3px; font-size: 14px; margin-bottom: 12px; }
+    button { padding: 8px 16px; border: 1px solid #0b3d66; background: #0b3d66; color: #fff; border-radius: 3px; cursor: pointer; font-size: 13px; }
+    #postcode-result { margin-top: 18px; padding: 12px 14px; background: #f2f6fa; border-left: 3px solid #0b3d66; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="header">Ecclesiastical &mdash; Post Code Look Up (Mirror)</div>
+  <div class="panel">
+    <form id="form-search-postcode" action="{{ url_for('search') }}" method="post">
+      <label for="postcode-search-input">Search for postcode:</label>
+      <input type="text" id="postcode-search-input" name="postcode" value="{{ state.postcode }}" autocomplete="off">
+      <button type="submit" id="btn-search-postcode">Search</button>
+    </form>
+    {% if state.result %}
+    <div id="postcode-result">{{ state.result }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>

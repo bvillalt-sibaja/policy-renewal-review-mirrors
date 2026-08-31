@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Percentage Calculator (Mirror)</title>
+  <style>
+    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #f4f4f6; color: #1b1b1b; font-size: 14px; display:flex; justify-content:center; padding-top: 60px; }
+    .calc-panel { background: #fff; border: 1px solid #d8d8dc; border-radius: 6px; padding: 24px 28px; width: 340px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    h1 { font-size: 16px; margin: 0 0 18px; }
+    .field-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+    label { width: 50px; font-size: 13px; color: #444; }
+    input[type=text] { flex: 1; padding: 6px 8px; border: 1px solid #b8b8bc; border-radius: 3px; font-size: 14px; }
+    button { padding: 6px 12px; border: 1px solid #395c9c; background: #395c9c; color: #fff; border-radius: 3px; cursor: pointer; font-size: 12px; }
+    button.clear { background: #fff; color: #666; border-color: #b8b8bc; }
+    #btn-calculate { width: 100%; margin-top: 6px; padding: 9px; font-size: 14px; }
+    #result-percentage { margin-top: 16px; font-size: 20px; font-weight: 600; text-align: center; color: #1e5f2e; }
+  </style>
+</head>
+<body>
+  <div class="calc-panel">
+    <h1>Percentage Calculator</h1>
+    <form id="form-calculate" action="{{ url_for('calculate') }}" method="post">
+      <div class="field-row">
+        <label for="input-percentage-from">From</label>
+        <input type="text" id="input-percentage-from" name="from_value" value="{{ state.from_value }}" autocomplete="off">
+        <button type="button" id="btn-delete-from" class="clear" onclick="document.getElementById('input-percentage-from').value=''">Clear</button>
+      </div>
+      <div class="field-row">
+        <label for="input-percentage-to">To</label>
+        <input type="text" id="input-percentage-to" name="to_value" value="{{ state.to_value }}" autocomplete="off">
+        <button type="button" id="btn-delete-to" class="clear" onclick="document.getElementById('input-percentage-to').value=''">Clear</button>
+      </div>
+      <button type="submit" id="btn-calculate">Calculate</button>
+    </form>
+    {% if state.result %}
+    <div id="result-percentage">{{ state.result }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>

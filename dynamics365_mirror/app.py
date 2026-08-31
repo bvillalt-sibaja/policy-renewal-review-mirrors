@@ -127,6 +127,22 @@ def contact_view(contact_id):
     )
 
 
+@app.route("/contact/<contact_id>/documents/<int:doc_index>", methods=["GET"])
+def document_view(contact_id, doc_index):
+    contact = get_contact_or_404(contact_id)
+    if doc_index < 0 or doc_index >= len(contact["documents"]):
+        abort(404)
+    document = contact["documents"][doc_index]
+    log_action("select_document", contact_id, {"document_name": document["name"]})
+    return render_template("document.html", contact=contact, document=document)
+
+
+@app.route("/contact/<contact_id>/pseudo", methods=["GET"])
+def pseudo_view(contact_id):
+    contact = get_contact_or_404(contact_id)
+    return render_template("pseudo.html", contact=contact)
+
+
 @app.route("/contact/<contact_id>/customer-care", methods=["POST"])
 def select_customer_care(contact_id):
     contact = get_contact_or_404(contact_id)
