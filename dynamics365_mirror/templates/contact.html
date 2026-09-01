@@ -151,7 +151,7 @@
       <div class="timeline-search-row">
         <input type="text" placeholder="Search timeline" readonly>
       </div>
-      <div class="timeline-note-row" onclick="showNoteForm()" id="btn-enter-note-row">&#128394; Enter a note...</div>
+      <div class="timeline-note-row" onclick="showNoteForm()" id="btn-enter-note">&#128394; Enter a note...</div>
 
       <div class="timeline-recent-heading">Recent</div>
       <ul id="timeline-note-list" class="timeline-list">
@@ -173,6 +173,22 @@
       {% endif %}
     </section>
   </div>
+
+  <section id="section-general-info" class="record-section">
+    <h2>General Information</h2>
+    <div class="field-group">
+      <label for="field-occupation-details">Occupation Details</label>
+      <div id="field-occupation-details" class="field-readonly">{{ contact.occupation_details }}</div>
+    </div>
+    <div class="field-group">
+      <label for="field-building-contents">Building and Contents</label>
+      <div id="field-building-contents" class="field-readonly">{{ contact.building_and_contents }}</div>
+    </div>
+    <div class="field-group">
+      <label for="field-alarm-requirement-note">CRM Note &mdash; Security / Alarm Requirement</label>
+      <div id="field-alarm-requirement-note" class="field-readonly field-alarm-note">{{ contact.alarm_requirement_note }}</div>
+    </div>
+  </section>
 
   <section id="section-documents" class="record-section">
     <h2>Documents</h2>

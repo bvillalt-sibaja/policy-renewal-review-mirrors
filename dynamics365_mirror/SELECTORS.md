@@ -96,7 +96,7 @@ Timeline / notes (right column):
 | `timeline-note-list` | ul | Container for timeline note rows (styled to match the real Timeline panel: avatar, "Modified on" date, Priority/Closed badges, title, truncated body). |
 | `timeline-note-<n>` | li | 0-indexed within whatever's currently rendered; newest note added during the session is inserted first. |
 | `btn-view-more-timeline` | link | Only rendered when more than 1 note exists and not already showing all; links to `?notes=all`. |
-| `btn-enter-note-row` | div | Reveals `#form-add-note` (client-side JS toggle, mirrors clicking "Enter a note..."). |
+| `btn-enter-note` | div | Reveals `#form-add-note` (client-side JS toggle, mirrors clicking "Enter a note..."). |
 | `form-add-note` | form (hidden until the note row is clicked) | `POST /contact/<id>/notes` (multipart) |
 | `note-title-input` | text input | `name="note_title"` |
 | `note-body-textarea` | textarea | `name="note_body"` |
