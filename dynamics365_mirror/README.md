@@ -56,9 +56,9 @@ Ran the app locally on port 5057 and exercised it with `curl`:
 - `GET /search?policy_number=` (empty) → same redirect-with-flash behavior
 - `GET /contact/0000001` and `GET /contact/0198766` → `200`
 - `GET /contact/<unknown-id>` → `404`
-- `POST /contact/0000001/save-and-close` → `302`, appended a `save_and_close` entry to `action_log.jsonl` with a timestamp
-- `POST /contact/0000001/save-and-continue` → `302`, appended a `save_and_continue` entry
-- `POST /contact/0000001/customer-care` → `302`, appended a `select_customer_care` entry
+- `POST /contact/0000001/customer-care` → `204`, appended a `select_customer_care` entry to `action_log.jsonl` (fired by the Customer Care `<select>`'s own `onchange`, no page reload - matches the real recording's distinct "Write: Select Customer Care" step, separate from Save & Close)
+- Ribbon "Save & Close" click → opens the "Unsaved changes" modal (JS only, no request yet) - matches the real app prompting before actually saving
+- `POST /contact/0000001/save-and-continue` (the modal's own "Save and continue" button) → `302`, appended a `save_and_continue` entry with a timestamp - this is the one action that actually commits the save
 - `POST /contact/0000001/notes` (title + body, no attachment) → `302`, note prepended to the in-memory timeline, appended an `add_note_and_close` entry (`has_attachment: false`)
 - `POST /contact/0000001/documents/upload` (multipart file) → `302`, file saved under `data/uploads/0000001/`, document appended to the list, appended an `upload_document` entry; confirmed the uploaded file is servable at `GET /uploads/0000001/<stored-name>` → `200`
 - `POST /contact/0000001/notes` again, this time with a `note_attachment` file → `302`, appended an `add_note_and_close` entry (`has_attachment: true`)

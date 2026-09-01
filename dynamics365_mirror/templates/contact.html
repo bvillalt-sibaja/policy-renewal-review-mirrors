@@ -1,43 +1,178 @@
 {% extends "base.html" %}
 {% block title %}Contact: {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
 {% block content %}
+  <div class="ribbon">
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128190;</span>Save</button>
+    <button type="button" class="ribbon-btn" id="btn-save-and-close" onclick="showUnsavedModal()"><span class="ribbon-icon">&#128190;</span>Save &amp; Close</button>
+    <div class="ribbon-sep"></div>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#43;</span>New</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128101;</span>Open org chart</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128683;</span>Deactivate</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128100;</span>Assign</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128260;</span>Refresh</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128274;</span>Check Access</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#9881;</span>Process &#9662;</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#9733;</span>Follow</button>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#8987;</span>Flow &#9662;</button>
+    <div class="ribbon-spacer"></div>
+    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128257;</span>Share &#9662;</button>
+  </div>
+
   <section id="contact-header" class="contact-header">
-    <h1 id="contact-name-heading">Contact: {{ contact.contact_name }}</h1>
-    <div class="contact-meta">
-      <span>Policy Number: <strong id="contact-policy-number">{{ contact.policy_number }}</strong></span>
-      <span>Scenario: <strong id="contact-scenario-label">{{ contact.scenario_label }}</strong></span>
+    <div class="contact-title-row">
+      <span class="contact-avatar" style="background:{{ contact.avatar_color }};">{{ contact.avatar_initials }}</span>
+      <div>
+        <h1 id="contact-name-heading">{{ contact.profile.last_name }}, {{ contact.profile.first_name }}
+          <span class="record-status" id="contact-record-status">- {{ contact.record_status }}</span>
+        </h1>
+      </div>
     </div>
+    <div class="contact-subtitle">Contact</div>
 
-    <div class="contact-actions">
-      <form id="form-select-customer-care" action="{{ url_for('select_customer_care', contact_id=contact.id) }}" method="post" style="display:inline;">
-        <button type="submit" id="btn-customer-care">Customer Care</button>
-      </form>
-
-      <form id="form-save-and-close" action="{{ url_for('save_and_close', contact_id=contact.id) }}" method="post" style="display:inline;">
-        <button type="submit" id="btn-save-and-close">Save &amp; Close</button>
-      </form>
-
-      <form id="form-save-and-continue" action="{{ url_for('save_and_continue', contact_id=contact.id) }}" method="post" style="display:inline;">
-        <button type="submit" id="btn-save-and-continue">Save and Continue</button>
-      </form>
+    <div class="contact-tabs">
+      <span class="contact-tab active">GENERAL</span>
+      <span class="contact-tab">Related &#9662;</span>
     </div>
   </section>
 
-  <section id="section-general-info" class="record-section">
-    <h2>General Information</h2>
-    <div class="field-group">
-      <label for="field-occupation-details">Occupation Details</label>
-      <div id="field-occupation-details" class="field-readonly">{{ contact.occupation_details }}</div>
-    </div>
-    <div class="field-group">
-      <label for="field-building-contents">Building and Contents</label>
-      <div id="field-building-contents" class="field-readonly">{{ contact.building_and_contents }}</div>
-    </div>
-    <div class="field-group">
-      <label for="field-alarm-requirement-note">CRM Note &mdash; Security / Alarm Requirement</label>
-      <div id="field-alarm-requirement-note" class="field-readonly field-alarm-note">{{ contact.alarm_requirement_note }}</div>
-    </div>
-  </section>
+  <div class="contact-columns">
+    <section class="col-contact-info">
+      <h2 class="col-heading">Contact Information</h2>
+
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> Salutation <span class="lock">&#128274;</span></div>
+        <div class="field-value link-value"><span class="lookup-icon">&#128196;</span>{{ contact.profile.salutation }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Title</div>
+        <div class="field-value">{{ contact.profile.title }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> First Name <span class="lock">&#128274;</span></div>
+        <div class="field-value">{{ contact.profile.first_name }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> Last Name <span class="lock">&#128274;</span></div>
+        <div class="field-value">{{ contact.profile.last_name }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Middle Name</div>
+        <div class="field-value">{{ contact.profile.middle_name or '' }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Suffix</div>
+        <div class="field-value">{{ contact.profile.suffix or '---' }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Gender</div>
+        <div class="field-value">{{ contact.profile.gender }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> Date of Birth <span class="lock">&#128274;</span></div>
+        <div class="field-value">{{ contact.profile.date_of_birth }}</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">Customer Care</div>
+        <div class="field-value">
+          <select id="field-customer-care" name="customer_care" class="field-select">
+            <option value="--Select--" {% if contact.profile.customer_care == '--Select--' %}selected{% endif %}>--Select--</option>
+            <option value="Customer Care" {% if contact.profile.customer_care == 'Customer Care' %}selected{% endif %}>Customer Care</option>
+            <option value="Customer Care - F" {% if contact.profile.customer_care == 'Customer Care - F' %}selected{% endif %}>Customer Care - F</option>
+            <option value="Not Applicable" {% if contact.profile.customer_care == 'Not Applicable' %}selected{% endif %}>Not Applicable</option>
+            <option value="Previous Customer Care" {% if contact.profile.customer_care == 'Previous Customer Care' %}selected{% endif %}>Previous Customer Care</option>
+            <option value="Previous Customer Care - F" {% if contact.profile.customer_care == 'Previous Customer Care - F' %}selected{% endif %}>Previous Customer Care - F</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Customer Care - 4 drivers</div>
+        <div class="field-value">
+          <div class="lookup-placeholder" id="field-customer-care-4-drivers">Select or search options<span class="plus">&#43;</span></div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-label">Email Address <span class="lock">&#128274;</span></div>
+        <div class="field-value">{{ contact.email }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Email address type</div>
+        <div class="field-value">{{ contact.profile.email_address_type }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Email Address 2</div>
+        <div class="field-value">{{ contact.profile.email_address_2 or '---' }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Email address 2 type</div>
+        <div class="field-value">{{ contact.profile.email_address_2_type }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> Occupation <span class="lock">&#128274;</span></div>
+        <div class="field-value link-value"><span class="lookup-icon">&#128196;</span>{{ contact.profile.occupation_title }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">EdenTree Key Client</div>
+        <div class="field-value">{{ contact.profile.edentree_key_client }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Customer Due Diligence</div>
+        <div class="field-value">{{ contact.profile.customer_due_diligence }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">EPS <span class="lock">&#128274;</span></div>
+        <div class="field-value">{{ contact.profile.eps }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label"><span class="req">*</span> Owner</div>
+        <div class="field-value link-value">{{ contact.profile.owner }}</div>
+      </div>
+
+      <div class="section-divider-heading">Mailing Address</div>
+    </section>
+
+    <section class="col-quotes">
+      <h2 class="col-heading">Quotes/Policies (Insured)</h2>
+      <div class="grid-empty">No data available</div>
+      <div class="grid-pagination">
+        <span>0 - 0 of 0</span>
+        <span>&#8676; Page 1 &#8677;</span>
+      </div>
+    </section>
+
+    <section class="col-timeline">
+      <div class="timeline-toolbar">
+        <h2 class="col-heading">Timeline</h2>
+        <div class="timeline-toolbar-icons">
+          <span>&#43;</span><span>&#128278;</span><span>&#9660;</span><span>&#9776;</span><span>&#128260;</span><span>&#8942;</span>
+        </div>
+      </div>
+      <div class="timeline-search-row">
+        <input type="text" placeholder="Search timeline" readonly>
+      </div>
+      <div class="timeline-note-row" onclick="showNoteForm()" id="btn-enter-note-row">&#128394; Enter a note...</div>
+
+      <div class="timeline-recent-heading">Recent</div>
+      <ul id="timeline-note-list" class="timeline-list">
+        {% for note in timeline_notes %}
+        <li id="timeline-note-{{ loop.index0 }}" class="timeline-item">
+          <span class="timeline-avatar" style="background:{{ note.avatar_color }};">{{ note.avatar_initials }}</span>
+          <div class="timeline-item-body-wrap">
+            <div class="timeline-item-meta">Modified on: {{ note.created_display }}</div>
+            <div class="timeline-item-badges">&#128337; Priority Normal &middot; <span class="badge-closed">Closed</span></div>
+            <div class="timeline-item-title">{{ note.title }}</div>
+            <div class="timeline-item-body">{{ note.body }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% if not showing_all_notes and total_notes > 1 %}
+        <a id="btn-view-more-timeline" class="timeline-view-more" href="{{ url_for('contact_view', contact_id=contact.id, notes='all', filter=timeline_filter) }}">View more</a>
+      {% endif %}
+    </section>
+  </div>
 
   <section id="section-documents" class="record-section">
     <h2>Documents</h2>
@@ -64,35 +199,7 @@
     {% endif %}
   </section>
 
-  <section id="section-timeline" class="record-section">
-    <h2>Timeline</h2>
-
-    <form id="form-timeline-filter" action="{{ url_for('contact_view', contact_id=contact.id) }}" method="get">
-      <label for="select-timeline-filter">Related</label>
-      <select id="select-timeline-filter" name="filter" onchange="this.form.submit()">
-        <option value="no_filter" {% if timeline_filter == 'no_filter' %}selected{% endif %}>No Filter Applied</option>
-        <option value="notes" {% if timeline_filter == 'notes' %}selected{% endif %}>Notes</option>
-      </select>
-    </form>
-
-    <ul id="timeline-note-list" class="timeline-list">
-      {% for note in timeline_notes %}
-      <li id="timeline-note-{{ loop.index0 }}" class="timeline-item">
-        <div class="timeline-item-title">{{ note.title }}</div>
-        <div class="timeline-item-body">{{ note.body }}</div>
-        <div class="timeline-item-meta">{{ note.author }} &middot; {{ note.created }}{% if note.attachment %} &middot; attachment: {{ note.attachment }}{% endif %}</div>
-      </li>
-      {% endfor %}
-    </ul>
-
-    {% if not showing_all_notes and total_notes > 1 %}
-      <a id="btn-view-more-timeline" href="{{ url_for('contact_view', contact_id=contact.id, notes='all', filter=timeline_filter) }}">View More</a>
-    {% endif %}
-
-    <div>
-      <button type="button" id="btn-enter-note" onclick="showNoteForm()">Enter a Note</button>
-    </div>
-
+  <section id="section-notes-form" class="record-section">
     <form id="form-add-note" class="note-form" action="{{ url_for('add_note', contact_id=contact.id) }}" method="post" enctype="multipart/form-data" {% if not show_note_form %}hidden{% endif %}>
       <div class="field-group">
         <label for="note-title-input">Title</label>
@@ -116,6 +223,22 @@
     <br>
     <a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a>
   </section>
+
+  <div class="modal-overlay" id="modal-unsaved-changes" hidden>
+    <div class="modal-card">
+      <div class="modal-card-top">
+        <h2>Unsaved changes</h2>
+        <button type="button" class="modal-close" onclick="hideUnsavedModal()">&#10005;</button>
+      </div>
+      <p>Do you want to save your changes before leaving this page?</p>
+      <form id="form-save-and-continue" action="{{ url_for('save_and_continue', contact_id=contact.id) }}" method="post">
+        <div class="modal-actions">
+          <button type="submit" id="btn-modal-save-and-continue">Save and continue</button>
+          <button type="button" id="btn-modal-discard-changes" onclick="hideUnsavedModal()">Discard changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 {% endblock %}
 
 {% block scripts %}
@@ -126,6 +249,23 @@
   function showNoteForm() {
     document.getElementById('form-add-note').hidden = false;
   }
+  function showUnsavedModal() {
+    document.getElementById('modal-unsaved-changes').hidden = false;
+  }
+  function hideUnsavedModal() {
+    document.getElementById('modal-unsaved-changes').hidden = true;
+  }
+  // Matches the real system: changing the Customer Care field is its own
+  // recorded action, independent of the later Save & Close / Save and
+  // continue steps - persisted immediately (no page navigation) so the
+  // field's value survives regardless of what the operator does next.
+  document.getElementById('field-customer-care').addEventListener('change', function () {
+    fetch('{{ url_for("select_customer_care", contact_id=contact.id) }}', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'customer_care=' + encodeURIComponent(this.value),
+    });
+  });
   // If the server rendered the page with enter_note=1 or docs shown, make sure
   // the corresponding panels are visible on load too.
   (function () {

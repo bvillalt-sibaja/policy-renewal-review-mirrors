@@ -34,6 +34,41 @@ CONTACTS_PATH = os.path.join(DATA_DIR, "contacts.json")
 UPLOADS_DIR = os.path.join(DATA_DIR, "uploads")
 ACTION_LOG_PATH = os.path.join(DATA_DIR, "action_log.jsonl")
 
+AVATAR_COLORS = ["#c239b3", "#0f6cbd", "#498205", "#b4009e", "#ca5010"]
+
+
+def avatar_initials(*name_parts):
+    letters = [p[0].upper() for p in name_parts if p]
+    return "".join(letters[:2]) or "?"
+
+
+def avatar_color(seed):
+    return AVATAR_COLORS[hash(seed) % len(AVATAR_COLORS)]
+
+
+def format_display_date(iso_timestamp):
+    try:
+        dt = datetime.fromisoformat(iso_timestamp)
+    except (TypeError, ValueError):
+        return iso_timestamp
+    return dt.strftime("%d/%m/%Y %H:%M")
+
+
+def with_display_fields(contact):
+    """Adds the computed presentation fields the templates use (avatar
+    initials/colors, formatted dates, record status) without persisting them
+    into contacts.json - contact.html reads contact.avatar_initials etc.
+    directly off the dict handed to render_template."""
+    profile = contact["profile"]
+    contact["avatar_initials"] = avatar_initials(profile["last_name"], profile["first_name"])
+    contact["avatar_color"] = avatar_color(contact["id"])
+    contact["record_status"] = contact.get("record_status", "Saved")
+    for note in contact["timeline_notes"]:
+        note["avatar_initials"] = avatar_initials(*note["author"].replace("(System)", "").split())
+        note["avatar_color"] = avatar_color(note["author"])
+        note["created_display"] = format_display_date(note["created"])
+    return contact
+
 app = Flask(__name__)
 app.secret_key = "dev-only-not-a-real-secret-do-not-reuse"
 
@@ -101,6 +136,7 @@ def search():
 @app.route("/contact/<contact_id>", methods=["GET"])
 def contact_view(contact_id):
     contact = get_contact_or_404(contact_id)
+    contact = with_display_fields(contact)
 
     show_all_docs = request.args.get("docs") == "all"
     documents = contact["documents"] if show_all_docs else contact["documents"][:1]
@@ -146,9 +182,10 @@ def pseudo_view(contact_id):
 @app.route("/contact/<contact_id>/customer-care", methods=["POST"])
 def select_customer_care(contact_id):
     contact = get_contact_or_404(contact_id)
-    log_action("select_customer_care", contact_id, {"contact_name": contact["contact_name"]})
-    flash("Customer Care selected.", "info")
-    return redirect(url_for("contact_view", contact_id=contact_id))
+    value = request.form.get("customer_care") or "--Select--"
+    contact["profile"]["customer_care"] = value
+    log_action("select_customer_care", contact_id, {"customer_care": value})
+    return ("", 204)
 
 
 @app.route("/contact/<contact_id>/documents/upload", methods=["POST"])
@@ -224,16 +261,13 @@ def add_note(contact_id):
     return redirect(url_for("contact_view", contact_id=contact_id, notes="all"))
 
 
-@app.route("/contact/<contact_id>/save-and-close", methods=["POST"])
-def save_and_close(contact_id):
-    contact = get_contact_or_404(contact_id)
-    entry = log_action("save_and_close", contact_id, {"contact_name": contact["contact_name"]})
-    flash(f"Saved and closed at {entry['timestamp']}.", "success")
-    return redirect(url_for("contact_view", contact_id=contact_id))
-
-
 @app.route("/contact/<contact_id>/save-and-continue", methods=["POST"])
 def save_and_continue(contact_id):
+    # The ribbon's own "Save & Close" button never posts directly - it only
+    # opens the "Unsaved changes" modal (matching the real system: clicking
+    # Save & Close with a pending edit prompts before actually saving). This
+    # route is what the modal's own "Save and continue" button hits, which
+    # is the real recorded action that actually commits the save.
     contact = get_contact_or_404(contact_id)
     entry = log_action("save_and_continue", contact_id, {"contact_name": contact["contact_name"]})
     flash(f"Saved, continuing at {entry['timestamp']}.", "success")

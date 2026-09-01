@@ -8,43 +8,74 @@
 <body>
   <header id="app-header" class="app-header">
     <div class="app-header-left">
-      <button type="button" id="btn-toggle-menu" class="icon-button" aria-label="Toggle Menu" onclick="toggleSideMenu()">&#9776;</button>
-      <a href="{{ url_for('home') }}" id="link-app-title" class="app-title">Sample Insurer &mdash; Dynamics 365 (Mirror)</a>
+      <button type="button" id="btn-toggle-menu" class="icon-button" aria-label="Toggle Menu" onclick="toggleSideMenu()">
+        <span class="waffle-icon"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
+      </button>
+      <a href="{{ url_for('home') }}" id="link-app-title" class="app-title">Dynamics 365<span class="app-suite">| D365 App</span></a>
+    </div>
+    <div class="app-header-right">
+      <span class="icon-button" aria-hidden="true">&#128269;</span>
+      <span class="icon-button" aria-hidden="true">&#128161;</span>
+      <span class="icon-button" aria-hidden="true">&#43;</span>
+      <span class="icon-button" aria-hidden="true">&#9660;</span>
+      <span class="icon-button" aria-hidden="true">&#9881;</span>
+      <span class="icon-button" aria-hidden="true">&#63;</span>
+      <span class="avatar-badge" style="background:#5b5fc7;" aria-hidden="true">HT</span>
     </div>
     <form id="global-search-form" class="global-search-form" action="{{ url_for('search') }}" method="get">
-      <input
-        type="text"
-        id="global-search-input"
-        name="policy_number"
-        placeholder="Search policy / reference number"
-        autocomplete="off"
-      >
+      <input type="text" id="global-search-input" name="policy_number" placeholder="Search policy / reference number" autocomplete="off">
       <button type="submit" id="global-search-button">Search</button>
     </form>
   </header>
 
-  <nav id="side-menu" class="side-menu" hidden>
-    <ul>
-      <li><a href="{{ url_for('home') }}" id="menu-link-home">Home</a></li>
-      <li><a href="#" id="menu-link-contacts" onclick="return false;">Contacts</a></li>
-      <li><a href="#" id="menu-link-cases" onclick="return false;">Cases (not implemented in mirror)</a></li>
-      <li><a href="#" id="menu-link-settings" onclick="return false;">Settings (not implemented in mirror)</a></li>
-    </ul>
-  </nav>
+  <div class="app-shell">
+    <nav id="side-menu" class="side-menu">
+      <div class="side-nav-item" style="font-weight:600;"><span>&#8962;</span> Home</div>
+      <div class="side-nav-item">Recent <span class="chev">&#9662;</span></div>
+      <div class="side-nav-item">Pinned <span class="chev">&#9662;</span></div>
 
-  <main class="app-main">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div id="flash-messages" class="flash-messages">
-          {% for category, message in messages %}
-            <div class="flash flash-{{ category }}" id="flash-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+      <div class="side-nav-section-label">My Work</div>
+      <a href="#" class="side-nav-item" onclick="return false;">Dashboards</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Activities</a>
 
-    {% block content %}{% endblock %}
-  </main>
+      <div class="side-nav-section-label">Customers</div>
+      <a href="#" class="side-nav-item" onclick="return false;">Organisations</a>
+      <a href="{{ url_for('home') }}" id="menu-link-contacts" class="side-nav-item active">Contacts</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Agencies</a>
+
+      <div class="side-nav-section-label">Opportunities</div>
+      <a href="#" class="side-nav-item" onclick="return false;">UKGI Opportunities</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Scheme Opportunities</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Quote/Policy</a>
+
+      <div class="side-nav-section-label">Market Information</div>
+      <a href="#" class="side-nav-item" onclick="return false;">Competitors</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Competitor Threats</a>
+
+      <div class="side-nav-section-label">Apc</div>
+      <a href="#" class="side-nav-item" onclick="return false;">Risk Locations</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Queue Items</a>
+      <a href="#" class="side-nav-item" onclick="return false;">Referrals</a>
+
+      <div class="side-nav-bottom">
+        <span class="sales-badge">S</span> Sales
+      </div>
+    </nav>
+
+    <main class="app-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div id="flash-messages" class="flash-messages">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}" id="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
 
   <footer class="app-footer">
     Sample Insurer Ltd &mdash; local Dynamics 365 mirror for RPA testing only. Not a real CRM.
@@ -53,7 +84,7 @@
   <script>
     function toggleSideMenu() {
       var menu = document.getElementById('side-menu');
-      menu.hidden = !menu.hidden;
+      menu.classList.toggle('collapsed');
     }
   </script>
   {% block scripts %}{% endblock %}
