@@ -1,12 +1,25 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_record.html" import record_commandbar, record_header %}
 {% block title %}{{ document.name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block nav_contacts %}{% endblock %}
+{% block nav_quote %}active{% endblock %}
+{% block commandbar %}{{ record_commandbar(contact, [('upload', 'Download', 0), ('sharepoint', 'Open in SharePoint', 0), ('refresh', 'Refresh', 0)]) }}{% endblock %}
+
 {% block content %}
-  <section id="section-document-detail" class="record-section">
-    <h1 id="document-name-heading">{{ document.name }}</h1>
-    <div class="field-group">
-      <label for="field-document-content">Content</label>
-      <div id="field-document-content" class="field-readonly">{{ document.content or "(no readable content for this document in the mirror)" }}</div>
+  {{ record_header(document.name, '', 'Document &middot; Documents on CRM Document Repository' | safe) }}
+
+  <section id="section-document-detail" class="doc-viewer">
+    <div class="doc-viewer-bar">
+      <span class="doc-viewer-name">{{ icon('file-pdf' if document.name.lower().endswith('.pdf') else 'file', 16) }}{{ document.name }}</span>
+      <span class="doc-viewer-tools">{{ icon('search', 14) }}<span>1 / 1</span>{{ icon('plus', 14) }}{{ icon('more', 14) }}</span>
     </div>
-    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact">Back to Contact</a>
+    <div class="doc-page">
+      <h1 id="document-name-heading">{{ document.name }}</h1>
+      <div class="field-group">
+        <label for="field-document-content">Content</label>
+        <div id="field-document-content" class="field-readonly doc-content">{{ document.content or "(no readable content for this document in the mirror)" }}</div>
+      </div>
+    </div>
   </section>
 {% endblock %}

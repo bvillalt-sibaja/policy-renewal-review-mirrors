@@ -2,33 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>News Search (Mirror)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if state.query %}{{ state.query }} - Search{% else %}Search{% endif %}</title>
   <style>
-    body { font-family: Arial, "Segoe UI", sans-serif; margin: 0; background: #fff; color: #202124; font-size: 14px; }
-    .search-bar { display: flex; align-items: center; gap: 10px; padding: 16px 24px; border-bottom: 1px solid #ebebeb; }
-    #search-input { flex: 1; max-width: 560px; padding: 9px 14px; border: 1px solid #dfe1e5; border-radius: 20px; font-size: 15px; }
-    button { padding: 8px 16px; border: 1px solid #dfe1e5; background: #f8f9fa; color: #3c4043; border-radius: 4px; cursor: pointer; font-size: 13px; }
-    .tabs { display: flex; gap: 20px; padding: 0 24px; border-bottom: 1px solid #ebebeb; }
-    .tab { padding: 12px 4px; color: #5f6368; cursor: pointer; border-bottom: 2px solid transparent; background: none; border-radius: 0; }
-    .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: 600; }
-    #search-results { padding: 20px 24px; max-width: 640px; line-height: 1.5; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, "Segoe UI", Roboto, sans-serif; margin: 0; background: #fff; color: #202124; font-size: 14px; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+    .g-logo { font-family: "Product Sans", "Segoe UI", Arial, sans-serif; font-weight: 500; letter-spacing: -1px; user-select: none; }
+    .g-logo .b { color: #4285f4; } .g-logo .r { color: #ea4335; } .g-logo .y { color: #fbbc05; } .g-logo .g { color: #34a853; }
+    .icon-btn { background: none; border: none; padding: 0; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; }
+    .icon-btn:hover { background: #f1f3f4; }
+    .icon-btn svg { width: 24px; height: 24px; }
+    .signin { background: #0b57d0; color: #fff; border: none; border-radius: 20px; height: 40px; padding: 0 22px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .right-tools { display: flex; align-items: center; gap: 6px; }
+
+    /* --- homepage --- */
+    .home-top { display: flex; justify-content: flex-end; align-items: center; padding: 8px 16px; gap: 14px; height: 60px; }
+    .home-top .lnk { font-size: 13px; color: #1f1f1f; }
+    .home { min-height: 100vh; display: flex; flex-direction: column; }
+    .home-main { display: flex; flex-direction: column; align-items: center; padding: 14vh 0 60px; }
+    .home-main .g-logo { font-size: 92px; margin-bottom: 26px; }
+    .home-box { width: 584px; height: 48px; border: 1px solid #dfe1e5; border-radius: 24px; display: flex; align-items: center; padding: 0 8px 0 14px; gap: 10px; box-shadow: 0 1px 6px rgba(32,33,36,.08); }
+    .home-box:hover { box-shadow: 0 1px 6px rgba(32,33,36,.28); }
+    .home-box input { flex: 1; border: none; outline: none; font-size: 16px; height: 44px; font-family: inherit; }
+    .home-btns { display: flex; gap: 12px; margin-top: 28px; }
+    .home-btns button { background: #f8f9fa; border: 1px solid #f8f9fa; border-radius: 4px; color: #3c4043; font-size: 14px; padding: 0 16px; height: 36px; cursor: pointer; }
+    .home-btns button:hover { border-color: #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); }
+    .home-foot { margin-top: auto; background: #f2f2f2; color: #70757a; font-size: 14px; }
+    .home-foot .loc { padding: 14px 30px; border-bottom: 1px solid #dadce0; }
+    .home-foot .links { display: flex; justify-content: space-between; padding: 14px 30px; }
+    .home-foot .links span { margin-right: 26px; }
+
+    /* --- results page --- */
+    .hdr { display: flex; align-items: center; padding: 22px 28px 0 28px; height: 86px; }
+    .hdr .logo-a { width: 178px; flex: none; padding-left: 4px; }
+    .hdr .g-logo { font-size: 30px; }
+    .page-body { min-height: calc(100vh - 190px); }
+    .chev { width: 8px; height: 8px; border-right: 2px solid #5f6368; border-bottom: 2px solid #5f6368; transform: rotate(45deg); margin-right: 8px; align-self: center; }
+    .sbox { width: 692px; height: 48px; border-radius: 24px; background: #fff; box-shadow: 0 2px 5px 1px rgba(64,60,67,.16); display: flex; align-items: center; padding: 0 6px 0 22px; }
+    .sbox input { flex: 1; border: none; outline: none; font-size: 16px; height: 44px; font-family: inherit; color: #202124; min-width: 0; }
+    .sbox .sep { width: 1px; height: 28px; background: #dadce0; margin: 0 6px; }
+    .hdr .right-tools { margin-left: auto; }
+    .tabs { display: flex; gap: 0; padding-left: 206px; margin-top: 8px; border-bottom: 1px solid #ebebeb; height: 46px; align-items: stretch; }
+    .tabs form { display: flex; margin: 0; }
+    .tab { background: none; border: none; color: #5f6368; font-size: 14px; padding: 0 12px; margin: 0 2px; cursor: pointer; border-bottom: 3px solid transparent; display: inline-flex; align-items: center; gap: 4px; }
+    .tab:hover { color: #202124; }
+    .tab.active { color: #202124; font-weight: 700; border-bottom-color: #1f1f1f; }
+    .tab .caret { font-size: 9px; }
+    .tab.tools { margin-left: 8px; }
+    .stats { padding: 14px 0 6px 206px; color: #70757a; font-size: 14px; }
+    .content { padding: 10px 0 60px 206px; max-width: 1100px; }
+    .res { max-width: 652px; margin-bottom: 30px; }
+    .site { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .fav { width: 28px; height: 28px; border-radius: 50%; background: #f1f3f4; border: 1px solid #e3e3e3; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #5f6368; flex: none; }
+    .site .nm { font-size: 14px; color: #202124; line-height: 18px; }
+    .site .url { font-size: 12px; color: #4d5156; line-height: 16px; }
+    .res .ttl { font-size: 20px; color: #1a0dab; line-height: 26px; display: block; margin-bottom: 4px; }
+    .res .ttl:hover { text-decoration: underline; }
+    .res .snip { color: #474747; line-height: 22px; font-size: 14px; }
+    .paa { max-width: 652px; border-top: 1px solid #ebebeb; margin-top: 8px; padding-top: 16px; }
+    .paa h3 { font-size: 20px; font-weight: 400; margin: 0 0 8px; }
+    .paa div { border-bottom: 1px solid #ebebeb; padding: 14px 0; font-size: 16px; color: #202124; display: flex; justify-content: space-between; }
+
+    /* news */
+    #search-results { max-width: 652px; }
+    .news-card { display: flex; gap: 18px; padding: 4px 0 26px; }
+    .news-card .body { flex: 1; }
+    .news-card .src { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #202124; margin-bottom: 6px; }
+    .news-card .src .dot::before { content: attr(data-l); }
+    .news-card .src .dot { width: 16px; height: 16px; border-radius: 50%; background: #1a3c6e; color: #fff; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+    .news-card .hl { display: block; font-size: 20px; color: #1a0dab; line-height: 26px; margin-bottom: 8px; }
+    .news-card .hl:hover { text-decoration: underline; }
+    .news-card .sn { color: #474747; font-size: 14px; line-height: 22px; margin-bottom: 8px; }
+    .news-card .tm { color: #70757a; font-size: 12px; }
+    .news-card .thumb { width: 92px; height: 92px; border-radius: 8px; flex: none; background: linear-gradient(135deg, #c9d6e3 0%, #8fa6bf 55%, #5b7390 100%); position: relative; overflow: hidden; }
+    .news-card .thumb::before { content: ""; position: absolute; left: 14px; right: 14px; bottom: 0; height: 46px; background: #3f536b; border-radius: 30px 30px 0 0; }
+    .news-card .thumb::after { content: ""; position: absolute; left: 32px; top: 16px; width: 28px; height: 28px; background: #2f4258; border-radius: 50%; }
+    .no-news { font-size: 16px; color: #202124; line-height: 24px; padding: 6px 0 0; }
+    .no-news-tips { color: #4d5156; font-size: 14px; margin-top: 18px; line-height: 22px; }
+    .no-news-tips ul { margin: 6px 0 0; padding-left: 38px; }
+    .foot { background: #f2f2f2; color: #70757a; font-size: 14px; padding: 16px 0 16px 206px; border-top: 1px solid #dadce0; }
   </style>
 </head>
 <body>
-  <div class="search-bar">
-    <form id="form-search" action="{{ url_for('search') }}" method="post" style="display:flex; gap:10px; flex:1;">
-      <input type="text" id="search-input" name="query" placeholder="Search" value="{{ state.query }}" autocomplete="off">
-      <button type="submit" id="btn-search">Search</button>
+{% set icon_x %}<svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="#70757a"/></svg>{% endset %}
+{% set icon_mic %}<svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="#4285f4"/><path d="M11 18.92h2V22h-2z" fill="#34a853"/><path d="M7 12H5a7 7 0 0 0 6 6.92V17a5 5 0 0 1-4-5z" fill="#fbbc05"/><path d="M12 17a5 5 0 0 0 5-5h2a7 7 0 0 1-6 6.92V17h-1z" fill="#ea4335"/></svg>{% endset %}
+{% set icon_lens %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="#4285f4"/><path d="M4 9V6a2 2 0 0 1 2-2h3v2H6v3zM15 4h3a2 2 0 0 1 2 2v3h-2V6h-3z" fill="#ea4335"/><path d="M4 15v3a2 2 0 0 0 2 2h3v-2H6v-3z" fill="#34a853"/><path d="M20 15v3a2 2 0 0 1-2 2h-3v-2h3v-3z" fill="#fbbc05"/></svg>{% endset %}
+{% set icon_search %}<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" fill="#4285f4"/></svg>{% endset %}
+{% set icon_gear %}<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.62.06-.94s-.02-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.61l-1.92-3.32a.5.5 0 0 0-.59-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.31-.09.63-.09.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2" fill="#5f6368"/></svg>{% endset %}
+{% set icon_apps %}<svg viewBox="0 0 24 24" fill="#5f6368"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>{% endset %}
+{% set logo %}<span class="g-logo"><span class="b">G</span><span class="r">o</span><span class="y">o</span><span class="b">g</span><span class="g">l</span><span class="r">e</span></span>{% endset %}
+
+{% if not state.query %}
+  {# ------------------------------- Homepage ------------------------------- #}
+  <div class="home">
+  <div class="home-top">
+    <a href="#" class="lnk" onclick="return false;">Gmail</a>
+    <a href="#" class="lnk" onclick="return false;">Images</a>
+    <button type="button" class="icon-btn" aria-label="Apps">{{ icon_apps }}</button>
+    <button type="button" class="signin">Sign in</button>
+  </div>
+  <div class="home-main">
+    {{ logo }}
+    <form id="form-search" action="{{ url_for('search') }}" method="post">
+      <div class="home-box">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" fill="#9aa0a6"/></svg>
+        <input type="text" id="search-input" name="query" value="{{ state.query }}" autocomplete="off" aria-label="Search">
+        <button type="button" class="icon-btn" aria-label="Search by voice">{{ icon_mic }}</button>
+        <button type="button" class="icon-btn" aria-label="Search by image">{{ icon_lens }}</button>
+      </div>
+      <div class="home-btns">
+        <button type="submit" id="btn-search">Google Search</button>
+        <button type="button">I'm Feeling Lucky</button>
+      </div>
     </form>
   </div>
+  <div class="home-foot">
+    <div class="loc">United Kingdom</div>
+    <div class="links"><div><span>About</span><span>Advertising</span><span>Business</span><span>How Search works</span></div><div><span>Privacy</span><span>Terms</span><span>Settings</span></div></div>
+  </div>
+  </div>
+{% else %}
+  {# ----------------------------- Results page ----------------------------- #}
+  <div class="hdr">
+    <a href="#" class="logo-a" onclick="return false;">{{ logo }}</a>
+    <form id="form-search" action="{{ url_for('search') }}" method="post" class="sbox">
+      <input type="text" id="search-input" name="query" value="{{ state.query }}" autocomplete="off" aria-label="Search">
+      <button type="button" class="icon-btn" aria-label="Clear" onclick="document.getElementById('search-input').value='';return false;">{{ icon_x }}</button>
+      <span class="sep"></span>
+      <button type="button" class="icon-btn" aria-label="Search by voice">{{ icon_mic }}</button>
+      <button type="button" class="icon-btn" aria-label="Search by image">{{ icon_lens }}</button>
+      <button type="submit" id="btn-search" class="icon-btn" aria-label="Search">{{ icon_search }}</button>
+    </form>
+    <div class="right-tools">
+      <button type="button" class="icon-btn" aria-label="Settings">{{ icon_gear }}</button>
+      <button type="button" class="icon-btn" aria-label="Apps">{{ icon_apps }}</button>
+      <button type="button" class="signin" style="margin-left:8px">Sign in</button>
+    </div>
+  </div>
+
   <div class="tabs">
-    <span class="tab {{ 'active' if not state.news_tab else '' }}">All</span>
-    <form id="form-news-tab" action="{{ url_for('news_tab') }}" method="post" style="display:inline;">
+    <button type="button" class="tab">AI Mode</button>
+    <button type="button" class="tab {{ '' if state.news_tab else 'active' }}">All</button>
+    <button type="button" class="tab">Images</button>
+    <button type="button" class="tab">Videos</button>
+    <button type="button" class="tab">Short videos</button>
+    <form id="form-news-tab" action="{{ url_for('news_tab') }}" method="post">
       <button type="submit" id="tab-news" class="tab {{ 'active' if state.news_tab else '' }}">News</button>
     </form>
+    <button type="button" class="tab">Shopping</button>
+    <button type="button" class="tab">More <span class="caret">&#9660;</span></button>
+    <button type="button" class="tab tools">Tools <span class="caret">&#9660;</span></button>
   </div>
+
+  <div class="page-body">
   {% if state.news_tab %}
-  <div id="search-results">{{ state.results }}</div>
+    <div class="content">
+      {% if state.results is string %}
+        <div id="search-results"><div class="no-news">{{ state.results }}</div></div>
+        <div class="no-news-tips">Suggestions:
+          <ul><li>Make sure that all words are spelled correctly.</li><li>Try different keywords.</li><li>Try more general keywords.</li></ul>
+        </div>
+      {% else %}
+        <div id="search-results">
+          {% for item in state.results %}
+          <div class="news-card">
+            <div class="body">
+              <div class="src"><span class="dot" data-l="{{ item.source[0] }}"></span><span>{{ item.source }}</span></div>
+              <a href="#" class="hl" onclick="return false;">{{ item.title }}</a>
+              <div class="sn">{{ item.snippet }}</div>
+              <div class="tm">{{ item.age }}</div>
+            </div>
+            <div class="thumb" aria-hidden="true"></div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="stats">About 1,240,000 results (0.31 seconds)</div>
+    <div class="content" id="all-results">
+      {% for r in all_results %}
+      <div class="res">
+        <div class="site"><span class="fav">{{ r.site[0] }}</span><div><div class="nm">{{ r.site }}</div><div class="url">{{ r.url }}</div></div></div>
+        <a href="#" class="ttl" onclick="return false;">{{ r.title }}</a>
+        <div class="snip">{{ r.snippet }}</div>
+      </div>
+      {% if loop.index == 2 %}
+      <div class="paa">
+        <h3>People also ask</h3>
+        <div>How do I find someone's contact details? <span class="chev"></span></div>
+        <div>Can I search the business register for free? <span class="chev"></span></div>
+        <div>How do I check reviews for a local business? <span class="chev"></span></div>
+      </div>
+      <div style="height:26px"></div>
+      {% endif %}
+      {% endfor %}
+    </div>
   {% endif %}
+  </div>
+  <div class="foot">United Kingdom &nbsp;&middot;&nbsp; Help &nbsp;&middot;&nbsp; Send feedback &nbsp;&middot;&nbsp; Privacy &nbsp;&middot;&nbsp; Terms</div>
+{% endif %}
 </body>
 </html>

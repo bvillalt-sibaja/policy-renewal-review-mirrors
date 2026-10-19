@@ -73,8 +73,8 @@ def main():
     compose = app.open_reply()
     check("reply compose window opened", compose is not None)
     check(
-        "reply window title is 'RE: <original subject>'",
-        compose.title() == "RE: " + complaint_email["subject"],
+        "reply window title is 'RE: <original subject> - Message (HTML)'",
+        compose.title() == "RE: " + complaint_email["subject"] + " - Message (HTML)",
     )
     check(
         "reply To field pre-filled with original sender",
@@ -118,12 +118,17 @@ def main():
     )
     check("logged entry has a timestamp", bool(logged.get("timestamp")))
     check("compose status shows 'Sent'", compose.status_var.get() == "Sent")
+    check("reply button enabled after selecting a row", app.reply_button.cget("state") == "normal")
+    check("inbox list row count matches inbox", app.inbox_list.size() == len(emails))
     check("app.last_sent recorded the sent entry", app.last_sent == logged)
 
     # --- New Email compose should start blank ---
     app.selected_index = None
     new_compose = app.open_new_email()
-    check("new-email window title is 'New Message'", new_compose.title() == "New Message")
+    check(
+        "new-email window title is 'Untitled - Message (HTML)'",
+        new_compose.title() == "Untitled - Message (HTML)",
+    )
     check("new-email To field starts blank", new_compose.to_var.get() == "")
     check("new-email Subject field starts blank", new_compose.subject_var.get() == "")
     check(

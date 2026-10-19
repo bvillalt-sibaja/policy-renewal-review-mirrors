@@ -2,28 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Post Code Look Up (Mirror)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Postcode Look Up</title>
   <style>
-    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #eef2f6; color: #1b2733; font-size: 14px; }
-    .header { background: #0b3d66; color: #fff; padding: 14px 20px; font-size: 16px; font-weight: 600; }
-    .panel { max-width: 480px; margin: 40px auto; background: #fff; border: 1px solid #d3dbe2; border-radius: 6px; padding: 24px 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    label { display: block; font-size: 13px; color: #444; margin-bottom: 6px; }
-    input[type=text] { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #b7c2cc; border-radius: 3px; font-size: 14px; margin-bottom: 12px; }
-    button { padding: 8px 16px; border: 1px solid #0b3d66; background: #0b3d66; color: #fff; border-radius: 3px; cursor: pointer; font-size: 13px; }
-    #postcode-result { margin-top: 18px; padding: 12px 14px; background: #f2f6fa; border-left: 3px solid #0b3d66; font-size: 14px; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; margin: 0; background: #fafafa; color: #1d1d1d; font-size: 15px; display: flex; flex-direction: column; }
+    .wrap { width: 100%; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+    header { background: #fafafa; }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; height: 110px; }
+    .brand { display: flex; align-items: center; gap: 6px; text-decoration: none; }
+    .brand svg { width: 46px; height: 46px; }
+    .wordmark { font-size: 36px; font-weight: 300; color: #2b2b2b; letter-spacing: .2px; font-family: "Segoe UI Light", "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+    .hdr-btn { background: #f08122; color: #fff; border: none; border-radius: 4px; padding: 0 34px; height: 50px; font-size: 16px; font-family: inherit; cursor: pointer; }
+    .hdr-btn:hover { background: #e07116; }
+    .divider { height: 2px; background: #dcdcdc; margin: 0 8px; box-shadow: 0 1px 1px rgba(0,0,0,.04); }
+    main { flex: 1; }
+    main .wrap { padding-top: 24px; padding-bottom: 60px; }
+    label { display: block; font-size: 17px; color: #222; margin-bottom: 8px; }
+    .search-row { display: flex; align-items: center; gap: 16px; }
+    #postcode-search-input { width: 298px; height: 46px; border: 1px solid #c9c9c9; border-radius: 3px; padding: 0 12px; font-size: 16px; font-family: inherit; background: #fff; box-shadow: inset 0 1px 2px rgba(0,0,0,.06); }
+    #postcode-search-input:focus { outline: none; border-color: #f08122; box-shadow: 0 0 0 2px rgba(240,129,34,.25); }
+    #btn-search-postcode { display: inline-flex; align-items: center; gap: 6px; background: #f08122; color: #222; border: none; border-radius: 4px; height: 48px; padding: 0 26px 0 22px; font-size: 16px; font-family: inherit; cursor: pointer; }
+    #btn-search-postcode:hover { background: #e07116; }
+    #btn-search-postcode svg { width: 19px; height: 19px; }
+    .results { margin-top: 30px; max-width: 760px; }
+    .results h2 { font-size: 15px; font-weight: 600; color: #555; margin: 0 0 10px; }
+    .result-card { background: #fff; border: 1px solid #e0e0e0; border-left: 4px solid #f08122; border-radius: 3px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+    .result-card svg { flex: none; width: 22px; height: 22px; }
+    #postcode-result { font-size: 16px; color: #1d1d1d; }
+    footer { background: #0b2341; color: #fff; margin: 0 4px 4px; }
+    footer .wrap { padding-top: 30px; padding-bottom: 36px; }
+    footer .copy { font-size: 15px; margin-bottom: 20px; }
+    footer .legal { font-size: 10.5px; line-height: 1.55; color: #e6ebf2; max-width: 1280px; }
   </style>
 </head>
 <body>
-  <div class="header">Ecclesiastical &mdash; Post Code Look Up (Mirror)</div>
-  <div class="panel">
-    <form id="form-search-postcode" action="{{ url_for('search') }}" method="post">
-      <label for="postcode-search-input">Search for postcode:</label>
-      <input type="text" id="postcode-search-input" name="postcode" value="{{ state.postcode }}" autocomplete="off">
-      <button type="submit" id="btn-search-postcode">Search</button>
-    </form>
-    {% if state.result %}
-    <div id="postcode-result">{{ state.result }}</div>
-    {% endif %}
-  </div>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="#" onclick="return false;" aria-label="ecclesiastical home">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <g transform="translate(24 24)">
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#f7a823"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#ef7d22" transform="rotate(45)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#e8562a" transform="rotate(90)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#d93a2b" transform="rotate(135)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#f39221" transform="rotate(180)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#fbb72c" transform="rotate(225)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#e8562a" transform="rotate(270)"/>
+            <path d="M0-22 L4-6 L0-2 L-4-6Z" fill="#c9302c" transform="rotate(315)"/>
+            <circle r="4.2" fill="#f6a01f"/>
+          </g>
+        </svg>
+        <span class="wordmark">ecclesiastical</span>
+      </a>
+      <button type="button" class="hdr-btn" onclick="return false;">Exit</button>
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <main>
+    <div class="wrap">
+      <form id="form-search-postcode" action="{{ url_for('search') }}" method="post">
+        <label for="postcode-search-input">Search for postcode:</label>
+        <div class="search-row">
+          <input type="text" id="postcode-search-input" name="postcode" value="{{ state.postcode }}" autocomplete="off">
+          <button type="submit" id="btn-search-postcode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
+            Search
+          </button>
+        </div>
+      </form>
+      {% if state.result %}
+      <div class="results">
+        <h2>Address</h2>
+        <div class="result-card">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7z" fill="#f08122"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>
+          <div id="postcode-result">{{ state.result }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="copy">&copy; Ecclesiastical 2026</div>
+      <div class="legal">Sample Insurance Office plc (SIO) Reg. No. 0000000. Registered in England at Example House, Sample Avenue, Example Business Park, Sampletown, AB1 2CD, United Kingdom. SIO is authorised by the Example Regulation Authority and regulated by the Financial Example Authority and the Example Regulation Authority. Firm Reference Number 000000. This page is a fictitious demonstration mirror for automation testing only.</div>
+    </div>
+  </footer>
 </body>
 </html>

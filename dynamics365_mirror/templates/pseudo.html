@@ -1,9 +1,32 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_record.html" import locked_notice, record_commandbar, record_header, QUOTE_CMDS %}
 {% block title %}Pseudo Activity -- {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block nav_contacts %}{% endblock %}
+{% block nav_quote %}active{% endblock %}
+{% block notice %}{{ locked_notice() }}{% endblock %}
+{% block commandbar %}{{ record_commandbar(contact, QUOTE_CMDS) }}{% endblock %}
+
 {% block content %}
-  <section id="section-pseudo-detail" class="record-section">
-    <h1>{{ contact.related_pseudo.label }}</h1>
-    <div id="pseudo-summary" class="field-readonly">{{ contact.related_pseudo.summary }}</div>
-    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact">Back to Contact</a>
+  {{ record_header(contact.related_pseudo.label, 'Saved', 'Pseudo',
+                   header_fields=[(contact.policy_number, 'Policy Number'), ('Normal', 'Priority'), ('Completed', 'Status')],
+                   tabs=['General', 'Related'], active='General') }}
+
+  <section id="section-pseudo-detail" class="form-card record-section">
+    <h1 class="col-heading">{{ contact.related_pseudo.label }}</h1>
+    <div class="field-row">
+      <div class="field-label">Regarding</div>
+      <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+      <div class="field-value"><a class="lookup" href="{{ url_for('contact_view', contact_id=contact.id) }}">{{ icon('card', 14) }}<span>{{ contact.profile.last_name }}, {{ contact.profile.first_name }}</span></a></div>
+    </div>
+    <div class="field-row">
+      <div class="field-label">Owner</div>
+      <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+      <div class="field-value"><a class="lookup" href="#" onclick="return false;"><span>{{ contact.profile.owner }}</span></a></div>
+    </div>
+    <div class="field-group">
+      <label for="pseudo-summary">Description {{ icon('lock', 12, 'lock') }}</label>
+      <div id="pseudo-summary" class="field-readonly">{{ contact.related_pseudo.summary }}</div>
+    </div>
   </section>
 {% endblock %}

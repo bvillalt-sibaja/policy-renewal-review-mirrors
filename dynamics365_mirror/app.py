@@ -15,6 +15,7 @@ Serves on http://127.0.0.1:5057 by default (override with PORT env var).
 import json
 import os
 import uuid
+import zlib
 from datetime import datetime, timezone
 
 from flask import (
@@ -43,7 +44,9 @@ def avatar_initials(*name_parts):
 
 
 def avatar_color(seed):
-    return AVATAR_COLORS[hash(seed) % len(AVATAR_COLORS)]
+    # crc32 rather than hash(): str hashes are salted per process, which made
+    # avatar colours change on every server restart.
+    return AVATAR_COLORS[zlib.crc32(seed.encode("utf-8")) % len(AVATAR_COLORS)]
 
 
 def format_display_date(iso_timestamp):
@@ -71,6 +74,8 @@ def with_display_fields(contact):
 
 app = Flask(__name__)
 app.secret_key = "dev-only-not-a-real-secret-do-not-reuse"
+# Templates format document timestamps the same way as timeline dates.
+app.jinja_env.filters["dyn_date"] = format_display_date
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
@@ -175,7 +180,7 @@ def document_view(contact_id, doc_index):
 
 @app.route("/contact/<contact_id>/pseudo", methods=["GET"])
 def pseudo_view(contact_id):
-    contact = get_contact_or_404(contact_id)
+    contact = with_display_fields(get_contact_or_404(contact_id))
     return render_template("pseudo.html", contact=contact)
 
 
@@ -276,7 +281,7 @@ def save_and_continue(contact_id):
 
 @app.route("/contact/<contact_id>/intermediary", methods=["GET"])
 def intermediary_view(contact_id):
-    contact = get_contact_or_404(contact_id)
+    contact = with_display_fields(get_contact_or_404(contact_id))
     return render_template("intermediary.html", contact=contact)
 
 

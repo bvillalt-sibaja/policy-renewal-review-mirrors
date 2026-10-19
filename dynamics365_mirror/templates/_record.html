@@ -1,0 +1,51 @@
+{#- Shared chrome for the non-contact record pages (Quote/Policy-style intermediary,
+    pseudo activity, document viewer). -#}
+{% from "_icons.html" import icon %}
+
+{% macro locked_notice(text="This record is locked because you are not the handler") -%}
+  <div class="notice-bar" role="status">{{ icon('info', 16) }}<span>{{ text }}</span></div>
+{%- endmacro %}
+
+{#- Command bar whose back arrow IS the #link-back-to-contact link (same tab, plain href). -#}
+{% macro record_commandbar(contact, extra=()) -%}
+  <div class="ribbon" role="toolbar" aria-label="Record Commands">
+    <div class="ribbon-items">
+    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact" class="ribbon-btn ribbon-back" title="Back to Contact">{{ icon('back') }}<span class="visually-hidden">Back to Contact</span></a>
+    <button type="button" class="ribbon-btn ribbon-icon-only" title="Open in new window">{{ icon('popout') }}</button>
+    {%- for ico, label, caret in extra %}
+    <button type="button" class="ribbon-btn">{{ icon(ico) }}<span>{{ label }}</span>{% if caret %}<span class="caret">{{ icon('chevron-down', 12) }}</span>{% endif %}</button>
+    {%- endfor %}
+    </div>
+    <button type="button" class="ribbon-btn ribbon-icon-only ribbon-overflow" title="More commands">{{ icon('more') }}</button>
+    <div class="ribbon-spacer"></div>
+    <button type="button" class="ribbon-btn">{{ icon('share') }}<span>Share</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+  </div>
+{%- endmacro %}
+
+{% set QUOTE_CMDS = [('save','Save',0),('save-close','Save & Close',0),('plus','New',0),('refresh','Refresh',0),('check-access','Check Access',0),('export','Export to Excel',0),('process','Process',1),('assign','Assign',0),('flow','Flow',1)] %}
+
+{% macro record_header(title, status, subtitle, header_fields=(), tabs=(), active='', entity_icon='quote') -%}
+  <section class="contact-header record-header">
+    <div class="contact-title-row">
+      <div class="contact-title-text">
+        <div class="record-title">{{ caller() if caller else title }}{% if status %} <span class="record-status">- {{ status }}</span>{% endif %}</div>
+        <div class="contact-subtitle">{{ subtitle }}</div>
+      </div>
+      {% if header_fields %}
+      <div class="header-fields">
+        {% for value, label in header_fields %}
+        <div class="header-field"><div class="header-field-value">{{ value }}</div><div class="header-field-label">{{ label }}</div></div>
+        {% endfor %}
+        <span class="header-fields-chev">{{ icon('chevron-down', 14) }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% if tabs %}
+    <div class="contact-tabs" role="tablist">
+      {% for t in tabs %}
+      <a href="#" onclick="return false;" class="contact-tab {% if t == active %}active{% endif %}" role="tab">{{ t }}{% if t == 'Related' %} <span class="caret">{{ icon('chevron-down', 12) }}</span>{% endif %}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+{%- endmacro %}

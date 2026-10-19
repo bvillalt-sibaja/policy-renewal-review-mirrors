@@ -1,24 +1,91 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_record.html" import locked_notice, record_commandbar, record_header, QUOTE_CMDS %}
 {% block title %}Intermediary -- {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
+{% block nav_contacts %}{% endblock %}
+{% block nav_quote %}active{% endblock %}
+{% block notice %}{{ locked_notice() }}{% endblock %}
+{% block commandbar %}{{ record_commandbar(contact, QUOTE_CMDS) }}{% endblock %}
+
 {% block content %}
-  <section id="section-intermediary-detail" class="record-section">
-    <h1>Intermediary</h1>
-    <div class="field-group">
-      <label>Name</label>
-      <div id="intermediary-name" class="field-readonly">{{ contact.intermediary.name }}</div>
+  {% set insured = contact.profile.last_name ~ ', ' ~ contact.profile.first_name %}
+  {{ record_header('Intermediary [' ~ insured ~ ']', 'Saved', 'Quote/Policy',
+                   header_fields=[(contact.policy_number, 'Policy Number'), ('Policy', 'Type'), ('---', 'Premium')],
+                   tabs=['Messages', 'General', 'Activities', 'Documents', 'Related'], active='General') }}
+
+  <div class="record-columns">
+    <section id="section-intermediary-detail" class="form-card record-section">
+      <h1 class="col-heading">Basic Information</h1>
+
+      <div class="field-row">
+        <div class="field-label">Opportunity</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><a class="lookup" href="#" onclick="return false;">{{ icon('opportunity', 14) }}<span>Intermediary [{{ insured }}]</span></a></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Name of Insured</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><a class="lookup" href="{{ url_for('contact_view', contact_id=contact.id) }}">{{ icon('card', 14) }}<span>{{ insured }}</span></a></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Agency</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><a class="lookup" href="#" onclick="return false;">{{ icon('card', 14) }}<span id="intermediary-name">{{ contact.intermediary.name }}</span></a></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Agency Reference</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><span id="intermediary-reference">{{ contact.intermediary.reference }}</span></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Broker Contact (Free Format Text)</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><span id="intermediary-contact">{{ contact.intermediary.contact }}</span></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Broker Phone</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><span id="intermediary-phone">{{ contact.intermediary.phone }}</span></div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Policy Number</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value">{{ contact.policy_number }}</div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Quote Win Probability</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value">Green - Likely</div>
+      </div>
+    </section>
+
+    <section class="form-card record-section notes-panel">
+      <h2 class="col-heading">Underwriter Notes</h2>
+      <p class="notes-panel-body">{{ contact.occupation_details }}</p>
+      <p class="notes-panel-body">{{ contact.building_and_contents }}</p>
+      <div class="notes-panel-meta">Modified On: {{ (contact.timeline_notes[0].created_display if contact.timeline_notes and contact.timeline_notes[0].created_display else '') }}</div>
+    </section>
+  </div>
+
+  <section class="form-card record-section">
+    <div class="grid-commandbar grid-commandbar-right">
+      <span class="grid-cmd">{{ icon('plus') }}<span>New Activity</span>{{ icon('chevron-down', 12) }}</span>
+      <span class="grid-cmd">{{ icon('activities') }}<span>Add Existing Activity</span></span>
+      <span class="grid-cmd">{{ icon('refresh') }}<span>Refresh</span></span>
+      <span class="grid-cmd">{{ icon('more') }}</span>
     </div>
-    <div class="field-group">
-      <label>Reference</label>
-      <div id="intermediary-reference" class="field-readonly">{{ contact.intermediary.reference }}</div>
+    <div class="activity-grid">
+      <div class="activity-row activity-head">
+        <span class="doc-col-check"></span><span>Subject {{ icon('chevron-down', 10) }}</span><span>Regarding {{ icon('chevron-down', 10) }}</span><span>Activity Type {{ icon('chevron-down', 10) }}</span><span>Activity Status {{ icon('chevron-down', 10) }}</span><span>Owner {{ icon('chevron-down', 10) }}</span><span>Priority {{ icon('chevron-down', 10) }}</span>
+      </div>
+      <div class="activity-row">
+        <span class="doc-col-check"></span><span class="activity-subject">Alarm Requirement - CRM note</span><span>Intermediary [{{ insured }}]</span><span>Email</span><span>Completed</span><span class="activity-owner"><span class="mini-avatar">KC</span>{{ contact.profile.owner }}</span><span>Normal</span>
+      </div>
+      {% for note in contact.timeline_notes %}
+      <div class="activity-row">
+        <span class="doc-col-check"></span><span class="activity-subject">RE: {{ note.title }}</span><span>Intermediary [{{ insured }}]</span><span>Note</span><span>Completed</span><span class="activity-owner"><span class="mini-avatar" style="background:{{ note.avatar_color }};">{{ note.avatar_initials }}</span>{{ note.author }}</span><span>Normal</span>
+      </div>
+      {% endfor %}
     </div>
-    <div class="field-group">
-      <label>Contact</label>
-      <div id="intermediary-contact" class="field-readonly">{{ contact.intermediary.contact }}</div>
-    </div>
-    <div class="field-group">
-      <label>Phone</label>
-      <div id="intermediary-phone" class="field-readonly">{{ contact.intermediary.phone }}</div>
-    </div>
-    <a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-back-to-contact">Back to Contact</a>
   </section>
 {% endblock %}

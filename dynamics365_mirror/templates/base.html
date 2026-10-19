@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% from "_icons.html" import icon %}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,19 +8,17 @@
 <body>
   <header id="app-header" class="app-header">
     <div class="app-header-left">
-      <button type="button" id="btn-toggle-menu" class="icon-button" aria-label="Toggle Menu" onclick="toggleSideMenu()">
-        <span class="waffle-icon"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span>
-      </button>
-      <a href="{{ url_for('home') }}" id="link-app-title" class="app-title">Dynamics 365<span class="app-suite">| D365 App</span></a>
+      <span class="topbar-icon waffle" aria-hidden="true">{{ icon('waffle', 18) }}</span>
+      <a href="{{ url_for('home') }}" id="link-app-title" class="app-title">Dynamics 365<span class="app-suite">D365 App</span></a>
     </div>
     <div class="app-header-right">
-      <span class="icon-button" aria-hidden="true">&#128269;</span>
-      <span class="icon-button" aria-hidden="true">&#128161;</span>
-      <span class="icon-button" aria-hidden="true">&#43;</span>
-      <span class="icon-button" aria-hidden="true">&#9660;</span>
-      <span class="icon-button" aria-hidden="true">&#9881;</span>
-      <span class="icon-button" aria-hidden="true">&#63;</span>
-      <span class="avatar-badge" style="background:#5b5fc7;" aria-hidden="true">HT</span>
+      <button type="button" class="topbar-icon" title="Search" aria-label="Search" onclick="toggleGlobalSearch()">{{ icon('search', 18) }}</button>
+      <span class="topbar-icon" title="Tell me what you want to do" aria-hidden="true">{{ icon('lightbulb', 18) }}</span>
+      <span class="topbar-icon" title="New" aria-hidden="true">{{ icon('plus', 18) }}</span>
+      <span class="topbar-icon" title="Advanced find" aria-hidden="true">{{ icon('filter', 18) }}</span>
+      <span class="topbar-icon" title="Settings" aria-hidden="true">{{ icon('settings', 18) }}</span>
+      <span class="topbar-icon" title="Help" aria-hidden="true">{{ icon('help', 18) }}</span>
+      <span class="avatar-badge" aria-hidden="true">HT</span>
     </div>
     <form id="global-search-form" class="global-search-form" action="{{ url_for('search') }}" method="get">
       <input type="text" id="global-search-input" name="policy_number" placeholder="Search policy / reference number" autocomplete="off">
@@ -30,39 +28,44 @@
 
   <div class="app-shell">
     <nav id="side-menu" class="side-menu">
-      <div class="side-nav-item" style="font-weight:600;"><span>&#8962;</span> Home</div>
-      <div class="side-nav-item">Recent <span class="chev">&#9662;</span></div>
-      <div class="side-nav-item">Pinned <span class="chev">&#9662;</span></div>
+      <button type="button" id="btn-toggle-menu" class="side-nav-item side-nav-toggle" aria-label="Toggle Menu" onclick="toggleSideMenu()">{{ icon('hamburger', 18) }}</button>
+      <div class="side-nav-scroll">
+        <a href="{{ url_for('home') }}" class="side-nav-item" onclick="return false;">{{ icon('home') }}<span class="lbl">Home</span></a>
+        <div class="side-nav-item">{{ icon('recent') }}<span class="lbl">Recent</span><span class="chev">{{ icon('chevron-down', 14) }}</span></div>
+        <div class="side-nav-item">{{ icon('pin') }}<span class="lbl">Pinned</span><span class="chev">{{ icon('chevron-down', 14) }}</span></div>
 
-      <div class="side-nav-section-label">My Work</div>
-      <a href="#" class="side-nav-item" onclick="return false;">Dashboards</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Activities</a>
+        <div class="side-nav-section-label">My Work</div>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('dashboard') }}<span class="lbl">Dashboards</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('activities') }}<span class="lbl">Activities</span></a>
 
-      <div class="side-nav-section-label">Customers</div>
-      <a href="#" class="side-nav-item" onclick="return false;">Organisations</a>
-      <a href="{{ url_for('home') }}" id="menu-link-contacts" class="side-nav-item active">Contacts</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Agencies</a>
+        <div class="side-nav-section-label">Customers</div>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('organisation') }}<span class="lbl">Organisations</span></a>
+        <a href="{{ url_for('home') }}" id="menu-link-contacts" class="side-nav-item {% block nav_contacts %}active{% endblock %}">{{ icon('contact') }}<span class="lbl">Contacts</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('agency') }}<span class="lbl">Agencies</span></a>
 
-      <div class="side-nav-section-label">Opportunities</div>
-      <a href="#" class="side-nav-item" onclick="return false;">UKGI Opportunities</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Scheme Opportunities</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Quote/Policy</a>
+        <div class="side-nav-section-label">Opportunities</div>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('opportunity') }}<span class="lbl">UKGI Opportunities</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('scheme') }}<span class="lbl">Scheme Opportunities</span></a>
+        <a href="#" class="side-nav-item {% block nav_quote %}{% endblock %}" onclick="return false;">{{ icon('quote') }}<span class="lbl">Quote/Policy</span></a>
 
-      <div class="side-nav-section-label">Market Information</div>
-      <a href="#" class="side-nav-item" onclick="return false;">Competitors</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Competitor Threats</a>
+        <div class="side-nav-section-label">Market Information</div>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('competitor') }}<span class="lbl">Competitors</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('threat') }}<span class="lbl">Competitor Threats</span></a>
 
-      <div class="side-nav-section-label">Apc</div>
-      <a href="#" class="side-nav-item" onclick="return false;">Risk Locations</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Queue Items</a>
-      <a href="#" class="side-nav-item" onclick="return false;">Referrals</a>
+        <div class="side-nav-section-label">Apc</div>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('location') }}<span class="lbl">Risk Locations</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('queue') }}<span class="lbl">Queue Items</span></a>
+        <a href="#" class="side-nav-item" onclick="return false;">{{ icon('referral') }}<span class="lbl">Referrals</span></a>
+      </div>
 
       <div class="side-nav-bottom">
-        <span class="sales-badge">S</span> Sales
+        <span class="sales-badge">S</span><span class="lbl">Sales</span><span class="chev">{{ icon('chevron-updown', 14) }}</span>
       </div>
     </nav>
 
     <main class="app-main">
+      {% block notice %}{% endblock %}
+      {% block commandbar %}{% endblock %}
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div id="flash-messages" class="flash-messages">
@@ -73,15 +76,24 @@
         {% endif %}
       {% endwith %}
 
-      {% block content %}{% endblock %}
+      <div class="page-body">
+        {% block content %}{% endblock %}
+      </div>
+
+      <footer class="app-footer">
+        Sample Insurer Ltd &mdash; local Dynamics 365 mirror for RPA testing only. Not a real CRM.
+      </footer>
     </main>
   </div>
 
-  <footer class="app-footer">
-    Sample Insurer Ltd &mdash; local Dynamics 365 mirror for RPA testing only. Not a real CRM.
-  </footer>
-
   <script>
+    function toggleGlobalSearch() {
+      var header = document.getElementById('app-header');
+      header.classList.toggle('search-open');
+      if (header.classList.contains('search-open')) {
+        document.getElementById('global-search-input').focus();
+      }
+    }
     function toggleSideMenu() {
       var menu = document.getElementById('side-menu');
       menu.classList.toggle('collapsed');

@@ -1,28 +1,49 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Search -- Sample Insurer Dynamics 365 (Mirror){% endblock %}
+{% block commandbar %}
+  <div class="ribbon" role="toolbar" aria-label="Grid Commands">
+    <div class="ribbon-items">
+    <button type="button" class="ribbon-btn">{{ icon('chart') }}<span>Show Chart</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('plus') }}<span>New</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('trash') }}<span>Delete</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('refresh') }}<span>Refresh</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('mail') }}<span>Email a Link</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('flow') }}<span>Flow</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('export') }}<span>Export to Excel</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    </div>
+    <button type="button" class="ribbon-btn ribbon-icon-only ribbon-overflow" title="More commands">{{ icon('more') }}</button>
+    <div class="ribbon-spacer"></div>
+    <button type="button" class="ribbon-btn">{{ icon('share') }}<span>Share</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+  </div>
+{% endblock %}
 {% block content %}
-  <h1>Global Search</h1>
-  <p>Type a policy / reference number in the search box above and press Enter (or click Search) to open the matching contact record.</p>
+  <div class="view-header">
+    <h1 class="view-title">Global Search <span class="caret">{{ icon('chevron-down', 14) }}</span></h1>
+    <div class="view-search">{{ icon('search', 14) }}<span>Type a policy / reference number in the search box and press Enter</span></div>
+  </div>
 
-  <h2>Seeded demo records</h2>
-  <table id="table-seed-contacts" class="data-table">
-    <thead>
-      <tr>
-        <th>Policy Number</th>
-        <th>Contact Name</th>
-        <th>Scenario</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for policy_number, contact in contacts.items() %}
-      <tr id="row-contact-{{ contact.id }}">
-        <td>{{ policy_number }}</td>
-        <td>{{ contact.contact_name }}</td>
-        <td>{{ contact.scenario_label }}</td>
-        <td><a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-open-contact-{{ contact.id }}">Open</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <section class="form-card record-section">
+    <h2 class="col-heading">Seeded demo records</h2>
+    <table id="table-seed-contacts" class="data-table">
+      <thead>
+        <tr>
+          <th>Policy Number</th>
+          <th>Contact Name</th>
+          <th>Scenario</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for policy_number, contact in contacts.items() %}
+        <tr id="row-contact-{{ contact.id }}">
+          <td>{{ policy_number }}</td>
+          <td>{{ contact.contact_name }}</td>
+          <td>{{ contact.scenario_label }}</td>
+          <td><a href="{{ url_for('contact_view', contact_id=contact.id) }}" id="link-open-contact-{{ contact.id }}">Open</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
 {% endblock %}

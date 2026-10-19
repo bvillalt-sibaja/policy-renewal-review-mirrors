@@ -1,79 +1,104 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Contact: {{ contact.contact_name }} -- Dynamics 365 (Mirror){% endblock %}
-{% block content %}
-  <div class="ribbon">
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128190;</span>Save</button>
-    <button type="button" class="ribbon-btn" id="btn-save-and-close" onclick="showUnsavedModal()"><span class="ribbon-icon">&#128190;</span>Save &amp; Close</button>
-    <div class="ribbon-sep"></div>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#43;</span>New</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128101;</span>Open org chart</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128683;</span>Deactivate</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128100;</span>Assign</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128260;</span>Refresh</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128274;</span>Check Access</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#9881;</span>Process &#9662;</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#9733;</span>Follow</button>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#8987;</span>Flow &#9662;</button>
-    <div class="ribbon-spacer"></div>
-    <button type="button" class="ribbon-btn"><span class="ribbon-icon">&#128257;</span>Share &#9662;</button>
-  </div>
 
+{% block commandbar %}
+  <div class="ribbon" role="toolbar" aria-label="Contact Commands">
+    <div class="ribbon-items">
+    <a href="{{ url_for('home') }}" class="ribbon-btn ribbon-icon-only" title="Go back">{{ icon('back') }}</a>
+    <button type="button" class="ribbon-btn ribbon-icon-only" title="Open in new window">{{ icon('popout') }}</button>
+    <button type="button" class="ribbon-btn">{{ icon('save') }}<span>Save</span></button>
+    <button type="button" class="ribbon-btn" id="btn-save-and-close" onclick="showUnsavedModal()">{{ icon('save-close') }}<span>Save &amp; Close</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('plus') }}<span>New</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('org-chart') }}<span>Open org chart</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('deactivate') }}<span>Deactivate</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('assign') }}<span>Assign</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('refresh') }}<span>Refresh</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('check-access') }}<span>Check Access</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('process') }}<span>Process</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('follow') }}<span>Follow</span></button>
+    <button type="button" class="ribbon-btn">{{ icon('flow') }}<span>Flow</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+    </div>
+    <button type="button" class="ribbon-btn ribbon-icon-only ribbon-overflow" title="More commands">{{ icon('more') }}</button>
+    <div class="ribbon-spacer"></div>
+    <button type="button" class="ribbon-btn">{{ icon('share') }}<span>Share</span><span class="caret">{{ icon('chevron-down', 12) }}</span></button>
+  </div>
+{% endblock %}
+
+{% block content %}
   <section id="contact-header" class="contact-header">
     <div class="contact-title-row">
-      <span class="contact-avatar" style="background:{{ contact.avatar_color }};">{{ contact.avatar_initials }}</span>
-      <div>
+      <span class="contact-avatar" style="--avatar:{{ contact.avatar_color }};">{{ contact.avatar_initials }}</span>
+      <div class="contact-title-text">
         <h1 id="contact-name-heading">{{ contact.profile.last_name }}, {{ contact.profile.first_name }}
           <span class="record-status" id="contact-record-status">- {{ contact.record_status }}</span>
         </h1>
+        <div class="contact-subtitle">Contact</div>
       </div>
     </div>
-    <div class="contact-subtitle">Contact</div>
 
-    <div class="contact-tabs">
-      <span class="contact-tab active">GENERAL</span>
-      <span class="contact-tab">Related &#9662;</span>
+    <div class="contact-tabs" role="tablist">
+      <a href="#contact-columns" class="contact-tab active" role="tab">GENERAL</a>
+      <div class="contact-tab tab-dropdown" role="tab" tabindex="0" onclick="toggleRelatedMenu(event)">Related <span class="caret">{{ icon('chevron-down', 12) }}</span>
+        <div class="tab-menu" id="related-tab-menu" hidden>
+          <div class="tab-menu-group">Common</div>
+          <a href="#section-related" class="tab-menu-item">{{ icon('activities') }} Activities</a>
+          <a href="#section-documents" class="tab-menu-item">{{ icon('folder') }} Documents</a>
+          <a href="#section-related" class="tab-menu-item">{{ icon('agency') }} Intermediary</a>
+          <a href="#section-related" class="tab-menu-item">{{ icon('note') }} Pseudo</a>
+        </div>
+      </div>
     </div>
   </section>
 
-  <div class="contact-columns">
-    <section class="col-contact-info">
+  <div class="contact-columns" id="contact-columns">
+    <section class="form-card col-contact-info">
       <h2 class="col-heading">Contact Information</h2>
 
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> Salutation <span class="lock">&#128274;</span></div>
-        <div class="field-value link-value"><span class="lookup-icon">&#128196;</span>{{ contact.profile.salutation }}</div>
+        <div class="field-label">Salutation</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><a class="lookup" href="#" onclick="return false;">{{ icon('card', 14) }}<span>{{ contact.profile.salutation }}</span></a></div>
       </div>
       <div class="field-row">
         <div class="field-label">Title</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.title }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> First Name <span class="lock">&#128274;</span></div>
+        <div class="field-label">First Name</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.first_name }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> Last Name <span class="lock">&#128274;</span></div>
+        <div class="field-label">Last Name</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.last_name }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Middle Name</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.middle_name or '' }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Suffix</div>
-        <div class="field-value">{{ contact.profile.suffix or '---' }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value muted">{{ contact.profile.suffix or '---' }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Gender</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.gender }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> Date of Birth <span class="lock">&#128274;</span></div>
+        <div class="field-label">Date of Birth</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.date_of_birth }}</div>
       </div>
 
       <div class="field-row">
         <div class="field-label">Customer Care</div>
+        <div class="field-flags"></div>
         <div class="field-value">
           <select id="field-customer-care" name="customer_care" class="field-select">
             <option value="--Select--" {% if contact.profile.customer_care == '--Select--' %}selected{% endif %}>--Select--</option>
@@ -87,168 +112,251 @@
       </div>
       <div class="field-row">
         <div class="field-label">Customer Care - 4 drivers</div>
+        <div class="field-flags"></div>
         <div class="field-value">
-          <div class="lookup-placeholder" id="field-customer-care-4-drivers">Select or search options<span class="plus">&#43;</span></div>
+          <div class="lookup-placeholder" id="field-customer-care-4-drivers">Select or search options<span class="plus">{{ icon('chevron-down', 14) }}</span></div>
         </div>
       </div>
 
       <div class="field-row">
-        <div class="field-label">Email Address <span class="lock">&#128274;</span></div>
+        <div class="field-label">Email Address</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.email }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Email address type</div>
-        <div class="field-value">{{ contact.profile.email_address_type }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value with-chevron">{{ contact.profile.email_address_type }}{{ icon('chevron-down', 14, 'value-chev') }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Email Address 2</div>
-        <div class="field-value">{{ contact.profile.email_address_2 or '---' }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value muted">{{ contact.profile.email_address_2 or '---' }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Email address 2 type</div>
-        <div class="field-value">{{ contact.profile.email_address_2_type }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value with-chevron muted">{{ contact.profile.email_address_2_type }}{{ icon('chevron-down', 14, 'value-chev') }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> Occupation <span class="lock">&#128274;</span></div>
-        <div class="field-value link-value"><span class="lookup-icon">&#128196;</span>{{ contact.profile.occupation_title }}</div>
+        <div class="field-label">Occupation</div>
+        <div class="field-flags"><span class="req">*</span>{{ icon('lock', 12, 'lock') }}</div>
+        <div class="field-value"><a class="lookup" href="#" onclick="return false;">{{ icon('card', 14) }}<span>{{ contact.profile.occupation_title }}</span></a></div>
       </div>
       <div class="field-row">
         <div class="field-label">EdenTree Key Client</div>
-        <div class="field-value">{{ contact.profile.edentree_key_client }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value with-chevron">{{ contact.profile.edentree_key_client }}{{ icon('chevron-down', 14, 'value-chev') }}</div>
       </div>
       <div class="field-row">
         <div class="field-label">Customer Due Diligence</div>
-        <div class="field-value">{{ contact.profile.customer_due_diligence }}</div>
+        <div class="field-flags"></div>
+        <div class="field-value with-chevron muted">{{ contact.profile.customer_due_diligence }}{{ icon('chevron-down', 14, 'value-chev') }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label">EPS <span class="lock">&#128274;</span></div>
+        <div class="field-label">EPS</div>
+        <div class="field-flags">{{ icon('lock', 12, 'lock') }}</div>
         <div class="field-value">{{ contact.profile.eps }}</div>
       </div>
       <div class="field-row">
-        <div class="field-label"><span class="req">*</span> Owner</div>
-        <div class="field-value link-value">{{ contact.profile.owner }}</div>
+        <div class="field-label">Owner</div>
+        <div class="field-flags"><span class="req">*</span></div>
+        <div class="field-value owner-value">
+          <span class="mini-avatar">{{ contact.profile.owner.split(',')[0][:1] }}{{ contact.profile.owner.split(',')[-1].strip()[:1] }}</span>
+          <a class="lookup" href="#" onclick="return false;"><span>{{ contact.profile.owner }}</span></a>
+          <span class="owner-x">{{ icon('close', 10) }}</span>
+          <span class="owner-search">{{ icon('search', 14) }}</span>
+        </div>
       </div>
 
       <div class="section-divider-heading">Mailing Address</div>
     </section>
 
-    <section class="col-quotes">
-      <h2 class="col-heading">Quotes/Policies (Insured)</h2>
+    <section class="form-card col-quotes">
+      <div class="col-heading-row">
+        <h2 class="col-heading">Quotes/Policies (Insured)</h2>
+        <span class="icon-muted">{{ icon('more', 16) }}</span>
+      </div>
+      <div class="subgrid-head">
+        <span class="subgrid-check"></span>
+        <span>Quote/Policy {{ icon('chevron-down', 10) }}</span>
+        <span>Policy Number {{ icon('chevron-down', 10) }}</span>
+        <span>Status {{ icon('chevron-down', 10) }}</span>
+      </div>
       <div class="grid-empty">No data available</div>
       <div class="grid-pagination">
         <span>0 - 0 of 0</span>
-        <span>&#8676; Page 1 &#8677;</span>
+        <span class="pager">{{ icon('back', 12) }}<span>Page 1</span>{{ icon('referral', 12) }}</span>
       </div>
     </section>
 
-    <section class="col-timeline">
+    <section class="form-card col-timeline">
       <div class="timeline-toolbar">
-        <h2 class="col-heading">Timeline</h2>
+        <h2 class="timeline-heading">Timeline</h2>
         <div class="timeline-toolbar-icons">
-          <span>&#43;</span><span>&#128278;</span><span>&#9660;</span><span>&#9776;</span><span>&#128260;</span><span>&#8942;</span>
+          <span title="Create a timeline record">{{ icon('plus') }}</span>
+          <span title="Bookmark">{{ icon('bookmark') }}</span>
+          <span title="No filter applied. Select to open or close filter pane.">{{ icon('filter') }}</span>
+          <span title="Expand all records">{{ icon('list') }}</span>
+          <span title="Refresh timeline">{{ icon('refresh') }}</span>
+          <span title="More commands">{{ icon('more') }}</span>
         </div>
       </div>
       <div class="timeline-search-row">
+        {{ icon('search', 14) }}
         <input type="text" placeholder="Search timeline" readonly>
       </div>
-      <div class="timeline-note-row" onclick="showNoteForm()" id="btn-enter-note">&#128394; Enter a note...</div>
+      <div class="timeline-note-row" onclick="showNoteForm()" id="btn-enter-note">{{ icon('pencil', 14) }}<span class="note-row-text">Enter a note...</span><span class="note-row-clip">{{ icon('paperclip', 14) }}</span></div>
 
-      <div class="timeline-recent-heading">Recent</div>
+      <section id="section-notes-form">
+        <form id="form-add-note" class="note-form" action="{{ url_for('add_note', contact_id=contact.id) }}" method="post" enctype="multipart/form-data" {% if not show_note_form %}hidden{% endif %}>
+          <div class="note-form-label">Create a note</div>
+          <input type="text" id="note-title-input" name="note_title" placeholder="Title" aria-label="Title">
+          <textarea id="note-body-textarea" name="note_body" rows="5" placeholder="Enter text..." aria-label="Note"></textarea>
+          <div class="note-form-toolbar">
+            <span>{{ icon('pencil', 14) }}</span><span>{{ icon('chevron-down', 10) }}</span><span>{{ icon('back', 14) }}</span><span>{{ icon('list', 14) }}</span><span>{{ icon('more', 14) }}</span>
+          </div>
+          <div class="note-form-attach">
+            <label for="note-attachment-input" class="attach-label">{{ icon('paperclip', 14) }} Add an Attachment</label>
+            <input type="file" id="note-attachment-input" name="note_attachment">
+          </div>
+          <div class="note-form-actions">
+            <button type="submit" id="btn-add-note-and-close">Add note and close</button>
+            <button type="button" class="btn-secondary" onclick="hideNoteForm()">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="timeline-recent-heading">{{ icon('chevron-down', 12) }} Recent</div>
       <ul id="timeline-note-list" class="timeline-list">
         {% for note in timeline_notes %}
         <li id="timeline-note-{{ loop.index0 }}" class="timeline-item">
           <span class="timeline-avatar" style="background:{{ note.avatar_color }};">{{ note.avatar_initials }}</span>
           <div class="timeline-item-body-wrap">
             <div class="timeline-item-meta">Modified on: {{ note.created_display }}</div>
-            <div class="timeline-item-badges">&#128337; Priority Normal &middot; <span class="badge-closed">Closed</span></div>
+            <div class="timeline-item-badges">
+              <span class="badge-type">{{ icon('note', 14) }}</span>
+              <span class="badge-priority">Priority Normal</span>
+              <span class="badge-closed">Closed</span>
+              <span class="timeline-item-actions">{{ icon('reply', 14) }}<span class="act-sep"></span>{{ icon('chevron-down', 14) }}{{ icon('trash', 14) }}</span>
+            </div>
             <div class="timeline-item-title">{{ note.title }}</div>
             <div class="timeline-item-body">{{ note.body }}</div>
+            {% if note.attachment %}
+            <div class="timeline-attachments"><span class="attach-chip">{{ icon('paperclip', 12) }}{{ note.attachment }}</span></div>
+            {% endif %}
+            <div class="timeline-item-more" onclick="this.closest('.timeline-item').classList.toggle('expanded')"><span>View more</span>{{ icon('chevron-down', 14) }}</div>
           </div>
         </li>
         {% endfor %}
       </ul>
 
       {% if not showing_all_notes and total_notes > 1 %}
-        <a id="btn-view-more-timeline" class="timeline-view-more" href="{{ url_for('contact_view', contact_id=contact.id, notes='all', filter=timeline_filter) }}">View more</a>
+        <a id="btn-view-more-timeline" class="timeline-view-more" href="{{ url_for('contact_view', contact_id=contact.id, notes='all', filter=timeline_filter) }}">Show more</a>
       {% endif %}
     </section>
   </div>
 
-  <section id="section-general-info" class="record-section">
-    <h2>General Information</h2>
+  <section id="section-general-info" class="form-card record-section">
+    <h2 class="col-heading">General Information</h2>
     <div class="field-group">
-      <label for="field-occupation-details">Occupation Details</label>
+      <label for="field-occupation-details">Occupation Details {{ icon('lock', 12, 'lock') }}</label>
       <div id="field-occupation-details" class="field-readonly">{{ contact.occupation_details }}</div>
     </div>
     <div class="field-group">
-      <label for="field-building-contents">Building and Contents</label>
+      <label for="field-building-contents">Building and Contents {{ icon('lock', 12, 'lock') }}</label>
       <div id="field-building-contents" class="field-readonly">{{ contact.building_and_contents }}</div>
     </div>
     <div class="field-group">
-      <label for="field-alarm-requirement-note">CRM Note &mdash; Security / Alarm Requirement</label>
+      <label for="field-alarm-requirement-note">CRM Note &mdash; Security / Alarm Requirement {{ icon('lock', 12, 'lock') }}</label>
       <div id="field-alarm-requirement-note" class="field-readonly field-alarm-note">{{ contact.alarm_requirement_note }}</div>
     </div>
   </section>
 
-  <section id="section-documents" class="record-section">
-    <h2>Documents</h2>
-
+  <section id="section-documents" class="form-card record-section">
     <form id="form-upload-document" action="{{ url_for('upload_document', contact_id=contact.id) }}" method="post" enctype="multipart/form-data">
-      <button type="button" id="btn-upload-document" onclick="showUploadPanel()">Upload</button>
-      <div id="upload-panel" class="upload-panel" hidden>
-        <input type="file" id="document-upload-input" name="document_file">
-        <button type="submit" id="btn-upload-ok">OK</button>
+      <div class="grid-commandbar">
+        <span class="grid-cmd">{{ icon('chart') }}<span>Show Chart</span></span>
+        <span class="grid-cmd">{{ icon('plus') }}<span>New</span>{{ icon('chevron-down', 12) }}</span>
+        <button type="button" id="btn-upload-document" class="grid-cmd" onclick="showUploadPanel()">{{ icon('upload') }}<span>Upload</span></button>
+        <span class="grid-cmd">{{ icon('file') }}<span>Document Location</span>{{ icon('chevron-down', 12) }}</span>
+        <span class="grid-cmd">{{ icon('folder') }}<span>Open Location</span>{{ icon('chevron-down', 12) }}</span>
+        <span class="grid-cmd">{{ icon('refresh') }}<span>Refresh</span></span>
+        <span class="grid-cmd">{{ icon('flow') }}<span>Flow</span>{{ icon('chevron-down', 12) }}</span>
+        <span class="grid-cmd">{{ icon('export') }}<span>Export Documents</span></span>
+      </div>
+
+      <div class="modal-overlay" id="upload-panel" hidden>
+        <div class="modal-card modal-wide" role="dialog" aria-labelledby="upload-dialog-title">
+          <div class="modal-card-top">
+            <h2 id="upload-dialog-title">Upload Documents</h2>
+            <button type="button" class="modal-close" onclick="hideUploadPanel()" aria-label="Close">{{ icon('close', 16) }}</button>
+          </div>
+          <label for="document-upload-input" class="upload-label">File Upload</label>
+          <input type="file" id="document-upload-input" name="document_file">
+          <p class="upload-hint">Maximum upload limit in Dynamics 365 is 50.00MB. Larger files can be uploaded directly in SharePoint.</p>
+          <label class="upload-overwrite"><span class="toggle"></span> Overwrite existing files</label>
+          <div class="modal-actions modal-actions-right">
+            <button type="submit" id="btn-upload-ok">OK</button>
+            <button type="button" class="btn-secondary" onclick="hideUploadPanel()">Cancel</button>
+          </div>
+        </div>
       </div>
     </form>
 
+    <div class="grid-title-row">
+      <h2 class="grid-title">Document Associated Grid</h2>
+      {{ icon('chevron-down', 14) }}
+    </div>
+    <div class="grid-location">{{ icon('sharepoint', 22) }}<span>Documents on CRM Document Repository</span></div>
+
+    <div class="doc-grid-head">
+      <span class="doc-col-check"></span>
+      <span>Name {{ icon('chevron-down', 10) }}</span>
+      <span>Created On {{ icon('chevron-down', 10) }}</span>
+      <span>Modified {{ icon('chevron-down', 10) }}</span>
+      <span>Modified by {{ icon('chevron-down', 10) }}</span>
+      <span>Source {{ icon('chevron-down', 10) }}</span>
+    </div>
     <ul id="document-list" class="document-list">
       {% for doc in documents %}
       <li id="doc-item-{{ loop.index0 }}" class="document-item">
-        <a href="{{ url_for('document_view', contact_id=contact.id, doc_index=loop.index0) }}" id="doc-link-{{ loop.index0 }}" class="doc-name">{{ doc.name }}</a>
-        <span class="doc-meta">uploaded {{ doc.uploaded }} &middot; {{ doc.size_kb }} KB</span>
+        <span class="doc-col-check"></span>
+        <span class="doc-col-name">{{ icon('file-pdf' if doc.name.lower().endswith('.pdf') else 'file', 16, 'doc-icon') }}<a href="{{ url_for('document_view', contact_id=contact.id, doc_index=loop.index0) }}" id="doc-link-{{ loop.index0 }}" class="doc-name">{{ doc.name }}</a></span>
+        <span class="doc-meta">{{ doc.uploaded | dyn_date }}</span>
+        <span class="doc-meta">{{ doc.uploaded | dyn_date }}</span>
+        <span class="doc-meta">{{ 'Hannah Taylor' if doc.stored_as else 'CRM_Integration' }}</span>
+        <span class="doc-meta">SharePoint &middot; {{ doc.size_kb }} KB</span>
       </li>
       {% endfor %}
     </ul>
 
     {% if not showing_all_docs and total_documents > 1 %}
-      <a id="btn-load-more-documents" href="{{ url_for('contact_view', contact_id=contact.id, docs='all') }}">Load More Documents ({{ total_documents - documents|length }} more)</a>
+      <a id="btn-load-more-documents" href="{{ url_for('contact_view', contact_id=contact.id, docs='all') }}">Load More Documents</a>
     {% endif %}
   </section>
 
-  <section id="section-notes-form" class="record-section">
-    <form id="form-add-note" class="note-form" action="{{ url_for('add_note', contact_id=contact.id) }}" method="post" enctype="multipart/form-data" {% if not show_note_form %}hidden{% endif %}>
-      <div class="field-group">
-        <label for="note-title-input">Title</label>
-        <input type="text" id="note-title-input" name="note_title" placeholder="Note title">
-      </div>
-      <div class="field-group">
-        <label for="note-body-textarea">Note</label>
-        <textarea id="note-body-textarea" name="note_body" rows="5" placeholder="Enter note text"></textarea>
-      </div>
-      <div class="field-group">
-        <label for="note-attachment-input">Add an Attachment</label>
-        <input type="file" id="note-attachment-input" name="note_attachment">
-      </div>
-      <button type="submit" id="btn-add-note-and-close">Add Note and Close</button>
-    </form>
-  </section>
-
-  <section id="section-related" class="record-section">
-    <h2>Related</h2>
-    <a href="{{ url_for('intermediary_view', contact_id=contact.id) }}" id="link-intermediary">Intermediary: {{ contact.intermediary.name }}</a>
-    <br>
-    <a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a>
+  <section id="section-related" class="form-card record-section">
+    <h2 class="col-heading">Related</h2>
+    <div class="related-row">
+      <span class="related-label">Intermediary</span>
+      <span class="related-value">{{ icon('agency', 14) }}<a href="{{ url_for('intermediary_view', contact_id=contact.id) }}" id="link-intermediary">Intermediary: {{ contact.intermediary.name }}</a></span>
+    </div>
+    <div class="related-row">
+      <span class="related-label">Pseudo</span>
+      <span class="related-value">{{ icon('note', 14) }}<a href="{{ url_for('pseudo_view', contact_id=contact.id) }}" id="link-related-pseudo">{{ contact.related_pseudo.label }}</a></span>
+    </div>
   </section>
 
   <div class="modal-overlay" id="modal-unsaved-changes" hidden>
-    <div class="modal-card">
+    <div class="modal-card" role="dialog" aria-labelledby="unsaved-title">
       <div class="modal-card-top">
-        <h2>Unsaved changes</h2>
-        <button type="button" class="modal-close" onclick="hideUnsavedModal()">&#10005;</button>
+        <h2 id="unsaved-title">Unsaved changes</h2>
+        <button type="button" class="modal-close" onclick="hideUnsavedModal()" aria-label="Close">{{ icon('close', 16) }}</button>
       </div>
       <p>Do you want to save your changes before leaving this page?</p>
       <form id="form-save-and-continue" action="{{ url_for('save_and_continue', contact_id=contact.id) }}" method="post">
-        <div class="modal-actions">
+        <div class="modal-actions modal-actions-right">
           <button type="submit" id="btn-modal-save-and-continue">Save and continue</button>
           <button type="button" id="btn-modal-discard-changes" onclick="hideUnsavedModal()">Discard changes</button>
         </div>
@@ -262,8 +370,16 @@
   function showUploadPanel() {
     document.getElementById('upload-panel').hidden = false;
   }
+  function hideUploadPanel() {
+    document.getElementById('upload-panel').hidden = true;
+  }
   function showNoteForm() {
     document.getElementById('form-add-note').hidden = false;
+    document.getElementById('btn-enter-note').classList.add('is-open');
+  }
+  function hideNoteForm() {
+    document.getElementById('form-add-note').hidden = true;
+    document.getElementById('btn-enter-note').classList.remove('is-open');
   }
   function showUnsavedModal() {
     document.getElementById('modal-unsaved-changes').hidden = false;
@@ -271,11 +387,22 @@
   function hideUnsavedModal() {
     document.getElementById('modal-unsaved-changes').hidden = true;
   }
+  function toggleRelatedMenu(ev) {
+    var menu = document.getElementById('related-tab-menu');
+    if (ev.target.closest('.tab-menu-item')) { menu.hidden = true; return; }
+    menu.hidden = !menu.hidden;
+  }
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest('.tab-dropdown')) {
+      document.getElementById('related-tab-menu').hidden = true;
+    }
+  });
   // Matches the real system: changing the Customer Care field is its own
   // recorded action, independent of the later Save & Close / Save and
   // continue steps - persisted immediately (no page navigation) so the
   // field's value survives regardless of what the operator does next.
   document.getElementById('field-customer-care').addEventListener('change', function () {
+    document.getElementById('contact-record-status').textContent = '- Unsaved';
     fetch('{{ url_for("select_customer_care", contact_id=contact.id) }}', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},

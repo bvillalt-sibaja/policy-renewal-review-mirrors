@@ -2,39 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Percentage Calculator (Mirror)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Percentage Calculator</title>
   <style>
-    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #f4f4f6; color: #1b1b1b; font-size: 14px; display:flex; justify-content:center; padding-top: 60px; }
-    .calc-panel { background: #fff; border: 1px solid #d8d8dc; border-radius: 6px; padding: 24px 28px; width: 340px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
-    h1 { font-size: 16px; margin: 0 0 18px; }
-    .field-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
-    label { width: 50px; font-size: 13px; color: #444; }
-    input[type=text] { flex: 1; padding: 6px 8px; border: 1px solid #b8b8bc; border-radius: 3px; font-size: 14px; }
-    button { padding: 6px 12px; border: 1px solid #395c9c; background: #395c9c; color: #fff; border-radius: 3px; cursor: pointer; font-size: 12px; }
-    button.clear { background: #fff; color: #666; border-color: #b8b8bc; }
-    #btn-calculate { width: 100%; margin-top: 6px; padding: 9px; font-size: 14px; }
-    #result-percentage { margin-top: 16px; font-size: 20px; font-weight: 600; text-align: center; color: #1e5f2e; }
+    * { box-sizing: border-box; }
+    body { font-family: Roboto, "Segoe UI", Arial, Helvetica, sans-serif; margin: 0; background: #fff; color: #222; font-size: 15px; }
+    .page { display: grid; grid-template-columns: 300px 728px 300px; gap: 40px; justify-content: center; padding: 50px 20px 40px; }
+    .ad-label { font-size: 10px; letter-spacing: .06em; color: #555; text-align: center; margin-bottom: 6px; text-transform: uppercase; }
+    .ad { background: #ececec; border: 1px solid #dcdcdc; display: flex; align-items: center; justify-content: center; color: #9a9a9a; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; position: relative; }
+    .ad::after { content: "i"; position: absolute; top: 3px; right: 4px; width: 13px; height: 13px; border: 1px solid #b5b5b5; border-radius: 2px; font-size: 9px; line-height: 11px; text-align: center; color: #999; font-style: italic; }
+    .side-left { padding-top: 0; }
+    .side-left .ad-top { height: 250px; background: transparent; border: none; }
+    .side-left .ad-top::after { display: none; }
+    .side-left .ad-mid { width: 300px; height: 250px; margin-top: 30px; }
+    .side-right .ad { width: 300px; height: 250px; margin-bottom: 50px; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+    .logo { width: 40px; height: 40px; background: #0d1b2a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 500; font-family: Arial, sans-serif; border-radius: 1px; }
+    h1 { font-size: 24px; margin: 0; font-weight: 700; color: #111; }
+    .intro { color: #6b6b6b; font-size: 15.5px; font-weight: 300; margin: 0 0 18px; }
+    .calc-row { display: flex; align-items: center; margin-bottom: 14px; }
+    .q { background: #ececec; padding: 20px 18px; width: 308px; flex: none; min-height: 84px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 7px; color: #555; font-size: 13.5px; }
+    .q.one { flex-wrap: nowrap; white-space: nowrap; }
+    .q.one input[type=text] { width: 68px; }
+    .q.one input.wide { width: 96px; }
+    .q.two input.wide { width: 78px; }
+    .q input[type=text] { width: 76px; height: 30px; border: 1px solid #fff; background: #fff; padding: 4px 6px; font-size: 14px; font-family: inherit; color: #111; }
+    .q input.wide { width: 108px; }
+    .q input:focus { outline: 2px solid #111; outline-offset: -1px; }
+    .q .qm { color: #888; }
+    .q .line { width: 100%; }
+    .actions { display: flex; align-items: center; margin-left: 168px; }
+    .calc-btn { background: #2c5f93; color: #fff; border: 1px solid #1f4c7a; font-weight: 700; font-size: 14px; letter-spacing: .02em; padding: 8px 10px; cursor: pointer; font-family: inherit; text-transform: uppercase; border-radius: 1px; }
+    .calc-btn:hover { background: #244f7c; }
+    .res-wrap { display: inline-flex; align-items: center; margin-left: 10px; color: #555; }
+    .res-box { display: inline-block; width: 104px; height: 32px; line-height: 30px; border: 1px solid #ececec; background: #fff; padding: 0 8px; font-size: 14px; color: #111; vertical-align: middle; overflow: hidden; white-space: nowrap; }
+    #result-percentage { display: inline; white-space: nowrap; }
+    .pct { display: inline-block; margin-left: 12px; color: #555; }
+    .hint { border-top: 1px solid #e6e6e6; border-bottom: 1px solid #e6e6e6; margin-top: 18px; padding: 8px 0; font-size: 11px; color: #555; text-align: center; }
+    .hint .kbd { display: inline-block; width: 22px; height: 12px; background: #d6d6d6; border-radius: 6px; vertical-align: middle; margin-right: 6px; }
+    .ad-bottom-label { margin-top: 26px; }
+    .ad-wide { height: 90px; }
+    .section-title { display: flex; justify-content: space-between; color: #777; font-size: 13px; margin: 22px 0 6px; }
+    .info h2 { font-size: 18px; color: #111; margin: 26px 0 8px; }
+    .info p { color: #555; line-height: 1.6; font-size: 14px; margin: 0 0 10px; }
+    .formula { background: #f6f6f6; border-left: 3px solid #2c5f93; padding: 10px 14px; font-family: Consolas, monospace; font-size: 13px; color: #333; }
+    @media (max-width: 1440px) { .page { grid-template-columns: 220px 728px 220px; gap: 24px; } .side-left .ad-mid, .side-right .ad { width: 220px; height: 200px; } }
+    @media (max-width: 1180px) { .page { grid-template-columns: 728px; } .side-left, .side-right { display: none; } }
   </style>
 </head>
 <body>
-  <div class="calc-panel">
-    <h1>Percentage Calculator</h1>
-    <form id="form-calculate" action="{{ url_for('calculate') }}" method="post">
-      <div class="field-row">
-        <label for="input-percentage-from">From</label>
-        <input type="text" id="input-percentage-from" name="from_value" value="{{ state.from_value }}" autocomplete="off">
-        <button type="button" id="btn-delete-from" class="clear" onclick="document.getElementById('input-percentage-from').value=''">Clear</button>
+  <div class="page">
+    <aside class="side-left">
+      <div class="ad-label">Advertisement</div>
+      <div class="ad ad-top"></div>
+      <div class="ad-label" style="margin-top:30px">Advertisement</div>
+      <div class="ad ad-mid">Advertisement</div>
+    </aside>
+
+    <main>
+      <div class="brand">
+        <div class="logo">%</div>
+        <h1>Percentage Calculator</h1>
       </div>
-      <div class="field-row">
-        <label for="input-percentage-to">To</label>
-        <input type="text" id="input-percentage-to" name="to_value" value="{{ state.to_value }}" autocomplete="off">
-        <button type="button" id="btn-delete-to" class="clear" onclick="document.getElementById('input-percentage-to').value=''">Clear</button>
+      <p class="intro">Percentage Calculator is a free online tool to calculate percentages.</p>
+
+      <!-- Row 1 (decorative: not used by the automation) -->
+      <div class="calc-row">
+        <div class="q one">
+          What is <input type="text" aria-label="percent" autocomplete="off"> % of <input type="text" class="wide" aria-label="value" autocomplete="off"> <span class="qm">?</span>
+        </div>
+        <div class="actions">
+          <button type="button" class="calc-btn" onclick="return false;">Calculate</button>
+          <span class="res-wrap"><span class="res-box"></span><span class="pct" style="visibility:hidden">%</span></span>
+        </div>
       </div>
-      <button type="submit" id="btn-calculate">Calculate</button>
-    </form>
-    {% if state.result %}
-    <div id="result-percentage">{{ state.result }}</div>
-    {% endif %}
+
+      <!-- Row 2 (decorative: not used by the automation) -->
+      <div class="calc-row">
+        <div class="q one two">
+          <input type="text" class="wide" aria-label="value" autocomplete="off"> is what percent of <input type="text" class="wide" aria-label="total" autocomplete="off"> <span class="qm">?</span>
+        </div>
+        <div class="actions">
+          <button type="button" class="calc-btn" onclick="return false;">Calculate</button>
+          <span class="res-wrap"><span class="res-box"></span><span class="pct">%</span></span>
+        </div>
+      </div>
+
+      <!-- Row 3: percentage increase/decrease - driven by the automation -->
+      <form id="form-calculate" action="{{ url_for('calculate') }}" method="post" class="calc-row">
+        <div class="q">
+          <span class="line">What is the percentage increase/decrease</span>
+          from <input type="text" id="input-percentage-from" name="from_value" value="{{ state.from_value }}" autocomplete="off">
+          to <input type="text" id="input-percentage-to" name="to_value" value="{{ state.to_value }}" autocomplete="off"> <span class="qm">?</span>
+        </div>
+        <div class="actions">
+          <button type="submit" id="btn-calculate" class="calc-btn">Calculate</button>
+          <span class="res-wrap">
+            {% if state.result %}
+              {% if state.result.endswith('%') %}
+              <span id="result-percentage"><span class="res-box">{{ state.result[:-1] }}</span><span class="pct">%</span></span>
+              {% else %}
+              <span id="result-percentage"><span class="res-box">{{ state.result }}</span></span>
+              {% endif %}
+            {% else %}
+              <span class="res-box"></span><span class="pct">%</span>
+            {% endif %}
+          </span>
+        </div>
+      </form>
+
+      <div class="hint"><span class="kbd"></span>Use tab to move to the next field. Use shift-tab to move to the previous field. Press enter to calculate.</div>
+
+      <div class="ad-label ad-bottom-label">Advertisement</div>
+      <div class="ad ad-wide">Advertisement</div>
+
+      <div class="info">
+        <h2>Percentage change formula</h2>
+        <p>The percentage increase or decrease from an original value to a new value is the difference between the two values divided by the original value, multiplied by 100.</p>
+        <div class="formula">Percentage change = (New value &minus; Original value) / Original value &times; 100</div>
+      </div>
+    </main>
+
+    <aside class="side-right">
+      <div class="ad-label">Advertisement</div>
+      <div class="ad">Advertisement</div>
+      <div class="ad-label">Advertisement</div>
+      <div class="ad">Advertisement</div>
+    </aside>
   </div>
 </body>
 </html>

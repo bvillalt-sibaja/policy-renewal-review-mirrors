@@ -71,6 +71,22 @@ verification (`data/action_log.jsonl`, the uploaded test PDF under
 `data/uploads/`) were removed afterward so the directory is back to a
 clean seeded state, and the server was stopped.
 
+## Look and feel
+
+Styled after the real Dynamics 365 Unified Interface seen in the process
+recording: dark navy top app bar (waffle, "Dynamics 365", search /
+lightbulb / + / filter / settings / help / avatar), left sitemap with an
+icon per entry and a hamburger that collapses it to an icon rail, a sticky
+command bar (back, pop-out, Save, Save & Close, New, ... with overflow
+"more" and Share), record header with entity image + "- Saved" status +
+entity subtitle, underline tabs, lock icons and underlined lookup links,
+timeline cards ("Modified on:", "Priority Normal  Closed", View more), a
+Document Associated Grid with an "Upload Documents" dialog, and
+Quote/Policy-style records with the "This record is locked because you
+are not the handler" notice bar and header fields. All icons are inline
+SVG, so it works fully offline. Every automation-facing `id` (see
+`SELECTORS.md`) is unchanged and nothing opens in a new tab.
+
 ## Directory layout
 
 ```
@@ -83,10 +99,14 @@ dynamics365_mirror/
 │   ├── action_log.jsonl      Created at runtime; one JSON line per state-changing action
 │   └── uploads/<contact_id>/ Created at runtime; uploaded files land here
 ├── templates/
-│   ├── base.html              Shared shell: header, global search, side menu, flash messages
+│   ├── _icons.html            Inline Fluent-style line-icon SVG macro (offline, no icon font/CDN)
+│   ├── _record.html           Shared record chrome: locked-record notice bar, command bar, record header/tabs
+│   ├── base.html              Shared shell: navy top app bar, global search, left sitemap, flash messages
 │   ├── search.html            Home / global search page
 │   ├── contact.html           Contact record view (the main mirrored screen)
-│   └── intermediary.html      Related > Intermediary detail page
+│   ├── intermediary.html      Related > Intermediary, styled as the Quote/Policy "Intermediary [...]" record
+│   ├── document.html          Document viewer (Document Associated Grid > file)
+│   └── pseudo.html            Related > Pseudo activity record
 └── static/
-    └── style.css              Minimal plain CSS, no external CDN dependency
+    └── style.css              Plain CSS (Unified Interface look), no external CDN/font dependency
 ```

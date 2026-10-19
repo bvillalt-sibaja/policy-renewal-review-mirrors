@@ -2,47 +2,326 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Map View (Mirror)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map View</title>
   <style>
-    body { font-family: "Segoe UI", -apple-system, Arial, sans-serif; margin: 0; background: #f2f4f3; color: #1b1b1b; font-size: 14px; }
-    .toolbar { background: #ffffff; border-bottom: 1px solid #d8dbd9; padding: 10px 16px; display: flex; gap: 10px; align-items: center; }
-    #map-search-input { flex: 1; max-width: 420px; padding: 7px 10px; border: 1px solid #b7bcb9; border-radius: 3px; font-size: 14px; }
-    button { padding: 7px 14px; border: 1px solid #4a7a4a; background: #4a7a4a; color: #fff; border-radius: 3px; cursor: pointer; font-size: 13px; }
-    button.secondary { background: #ffffff; color: #2f4f2f; border-color: #b7bcb9; }
-    button.active { background: #2f4f2f; border-color: #2f4f2f; }
-    .map-area { margin: 16px; height: 420px; border-radius: 4px; position: relative; overflow: hidden;
-      background: repeating-linear-gradient(45deg, #dfe7df, #dfe7df 10px, #d3ddd3 10px, #d3ddd3 20px); }
-    .map-area.hybrid { background: repeating-linear-gradient(45deg, #37503a, #37503a 10px, #2c412e 10px, #2c412e 20px); }
-    #map-pin { position: absolute; top: 45%; left: 48%; font-size: 32px; }
-    .overlay-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 3px; font-size: 12px; }
-    .panel { margin: 0 16px 16px; background: #fff; border: 1px solid #d8dbd9; border-radius: 4px; padding: 12px 16px; }
-    .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: #555; margin: 0 0 8px; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { font-family: "Segoe UI", Roboto, -apple-system, Arial, sans-serif; margin: 0; background: #fff; color: #1f1f1f; font-size: 13px; display: flex; flex-direction: column; overflow: hidden; }
+    button { font-family: inherit; }
+    svg { display: block; }
+
+    /* ---------- top bar ---------- */
+    .topbar { background: #000; height: 54px; display: flex; align-items: center; padding: 0 14px 0 24px; gap: 16px; flex: none; }
+    .redline { height: 3px; background: #e4002b; flex: none; }
+    #form-search-map { margin: 0; }
+    .search-pill { display: flex; align-items: center; background: #fff; border-radius: 16px; height: 32px; width: 330px; padding: 0 12px 0 6px; }
+    #btn-search-map { background: none; border: none; padding: 0 2px 0 6px; height: 30px; display: inline-flex; align-items: center; gap: 2px; cursor: pointer; }
+    #btn-search-map svg { width: 18px; height: 18px; }
+    .caret-sm { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #444; margin: 0 6px 0 3px; }
+    #map-search-input { flex: 1; border: none; outline: none; font-size: 13px; color: #222; height: 28px; min-width: 0; font-family: inherit; }
+    #map-search-input::placeholder { color: #8a8a8a; }
+    .analysis-pill { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px; border-radius: 16px; background: #fff; border: none; color: #555; font-size: 10px; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
+    .analysis-pill svg { width: 14px; height: 14px; }
+    .tools { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .tool-group { display: flex; align-items: center; background: #fff; border-radius: 6px; height: 36px; padding: 0 10px; gap: 4px; }
+    .tool-group button { background: none; border: none; width: 42px; height: 32px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .tool-group svg { width: 21px; height: 21px; }
+    .user-btn { background: none; border: none; cursor: pointer; padding: 0; }
+    .user-btn svg { width: 30px; height: 30px; }
+
+    /* ---------- main area ---------- */
+    .main { flex: 1; display: flex; min-height: 0; position: relative; }
+    .panel { width: 364px; flex: none; background: #fff; border-right: 1px solid #e3e3e3; overflow-y: auto; position: relative; padding-bottom: 16px; }
+    .tabs { display: flex; margin: 0 14px 0 8px; border-bottom: 1px solid #e6e6e6; }
+    .tabs button { flex: 1; background: none; border: none; height: 50px; font-size: 12px; letter-spacing: .04em; color: #333; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tabs button.active { color: #2bb3a8; border-bottom-color: #2bb3a8; }
+    .card { margin: 10px 12px 0 12px; padding: 12px 10px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; }
+    .card .ico { width: 34px; height: 34px; flex: none; }
+    .card .txt { flex: 1; min-width: 0; }
+    .card .ttl { font-size: 14px; font-weight: 600; color: #222; }
+    .card .sub { font-size: 10px; color: #888; letter-spacing: .05em; margin-top: 3px; text-transform: uppercase; }
+    #btn-ad-hoc-analysis { background: none; border: 1px solid transparent; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; }
+    #btn-ad-hoc-analysis:hover { background: #fdecef; }
+    #btn-ad-hoc-analysis.active { border-color: #f3c3cc; background: #fff5f7; }
+    #btn-ad-hoc-analysis svg { width: 22px; height: 22px; }
+    .kebab { background: none; border: none; width: 16px; height: 26px; cursor: pointer; padding: 0; }
+    .kebab svg { width: 4px; height: 16px; margin: auto; }
+    .loc-card { margin: 0 12px; padding: 14px 10px 10px 10px; border-bottom: 1px solid #eee; }
+    .loc-row { display: flex; align-items: flex-start; gap: 12px; }
+    .loc-row .ico { width: 26px; height: 32px; flex: none; }
+    .loc-addr { font-size: 13px; font-weight: 600; color: #333; }
+    .loc-sub { font-size: 12px; color: #888; margin-top: 3px; }
+    .issue { display: inline-flex; align-items: center; gap: 3px; background: #e4002b; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 2px; letter-spacing: .03em; }
+    .issue::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid #fff; box-sizing: border-box; }
+    .loc-badge { display: flex; justify-content: flex-end; margin-top: 4px; }
+    .peril-h { font-size: 10px; color: #9a9a9a; letter-spacing: .07em; text-transform: uppercase; margin: 18px 22px 10px; }
+    .peril { display: flex; align-items: center; margin: 0 22px; font-size: 13px; color: #333; }
+    .peril .nm { width: 162px; }
+    .bar { display: inline-block; width: 3px; height: 20px; vertical-align: middle; margin-right: 8px; border-radius: 1px; }
+    .bar.red { background: #e4002b; } .bar.teal { background: #2bb3a8; } .bar.amber { background: #f0a020; } .bar.grey { background: #c8c8c8; }
+    .actions { display: flex; justify-content: space-between; margin: 22px 18px 6px; }
+    .act { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 72px; font-size: 12px; color: #666; cursor: pointer; line-height: 1.25; text-align: center; }
+    .act .circ { width: 50px; height: 50px; border-radius: 50%; border: 1.5px solid #9a9a9a; display: flex; align-items: center; justify-content: center; }
+    .act svg { width: 26px; height: 26px; }
+    .empty-note { margin: 14px 22px 0; color: #999; font-size: 12px; line-height: 1.5; }
+    .layers-h { font-size: 11px; color: #9a9a9a; letter-spacing: .07em; text-transform: uppercase; margin: 22px 22px 4px; padding-top: 14px; border-top: 1px solid #eee; }
+    .layer-row { display: flex; align-items: center; margin: 0 16px 0 22px; height: 58px; }
+    .layer-row .lic { width: 22px; height: 22px; margin-right: 14px; flex: none; }
+    .layer-row .lname { width: 98px; font-size: 12px; letter-spacing: .05em; color: #444; text-transform: uppercase; }
+    .layer-row form { flex: 1; margin: 0; }
+    .dd { width: 100%; height: 34px; background: none; border: none; border-bottom: 1px solid #9a9a9a; display: flex; align-items: center; justify-content: space-between; padding: 0 2px; font-size: 14px; color: #222; cursor: pointer; text-align: left; }
+    .dd .ph { color: #b0b0b0; font-size: 13px; }
+    .dd .dcaret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid #555; }
+    .dd.active { border-bottom-color: #2bb3a8; }
+    .legend { margin: 6px 22px 0; }
+    .legend .lt { font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px; }
+    .legend .lt::before { content: ""; width: 9px; height: 9px; border: 1.5px solid #888; border-radius: 50%; }
+    .legend .op { font-size: 12px; color: #555; margin: 12px 0 6px; }
+    .legend .slider { height: 3px; background: linear-gradient(90deg, #2bb3a8 70%, #ddd 70%); width: 140px; margin-bottom: 14px; }
+    .legend .sw { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 11px; color: #666; }
+    .legend .sw span { width: 30px; height: 16px; border: 1px solid #aaa; }
+    .tbl-btn { display: flex; justify-content: center; margin-top: 26px; }
+    .tbl-btn button { width: 50px; height: 50px; border-radius: 50%; background: #e3f3fb; border: 1px solid #c7e5f3; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .tbl-btn svg { width: 24px; height: 24px; }
+
+    /* ---------- map ---------- */
+    .map-wrap { flex: 1; position: relative; overflow: hidden; background: #f3f3f1; }
+    #map-canvas, #map-canvas > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .collapse { position: absolute; left: 0; top: 14px; width: 24px; height: 40px; background: #fff; border: 1px solid #ddd; border-left: none; display: flex; align-items: center; justify-content: center; z-index: 3; cursor: pointer; padding: 0; }
+    .collapse svg { width: 10px; height: 14px; }
+    .zoom { position: absolute; right: 12px; bottom: 34px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); border-radius: 2px; z-index: 3; }
+    .zoom button { display: block; width: 40px; height: 40px; background: none; border: none; font-size: 24px; color: #666; cursor: pointer; line-height: 1; }
+    .zoom button + button { border-top: 1px solid #e6e6e6; }
+    .attrib { position: absolute; right: 0; bottom: 0; background: rgba(255,255,255,.75); font-size: 10px; color: #444; padding: 1px 8px; z-index: 3; }
+    .attrib span { margin-left: 12px; }
+    .map-chip { position: absolute; left: 36px; top: 14px; z-index: 3; background: rgba(255,255,255,.92); border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.25); font-size: 11px; color: #444; padding: 5px 10px; letter-spacing: .03em; }
+
+    /* road-map palette */
+    .base-map .land { fill: #f6f6f4; }
+    .base-map .blk { fill: #ededeb; }
+    .base-map .bld { fill: #e2e2e0; stroke: #d6d6d4; stroke-width: 1; }
+    .base-map .park { fill: #c4e8d6; }
+    .base-map .water { fill: #9fdde0; }
+    .base-map .trees { display: none; }
+    .base-map .maj-c { fill: none; stroke: #d4d4d2; stroke-width: 24; stroke-linecap: round; }
+    .base-map .maj { fill: none; stroke: #e3e3e1; stroke-width: 19; stroke-linecap: round; }
+    .base-map .lbl { font: 16px "Segoe UI", Arial, sans-serif; fill: #4a4a4a; paint-order: stroke; stroke: #f6f6f4; stroke-width: 4px; }
+    .base-map .lbl.sm { font-size: 13px; }
+    .base-map .poi circle { fill: #fff; stroke: #888; stroke-width: 2.5; }
+    .base-map .poi circle.in { fill: #888; stroke: none; }
+    .base-map .poi-l { font-size: 14px; fill: #666; }
+    .base-map .clu circle { fill: #79acd4; stroke: #fff; stroke-width: 3; opacity: .92; }
+    .base-map .clu text { font: 600 13px "Segoe UI", Arial, sans-serif; fill: #1f3b57; text-anchor: middle; }
+    .base-map .ypin circle { fill: #f5e27a; stroke: #fff; stroke-width: 3; opacity: .9; }
+    .base-map .ypin circle.in { fill: #d0b324; stroke: none; }
+    .base-map .tpin { fill: #6fb0d6; stroke: #fff; stroke-width: 1.5; }
+    .base-map .tex { opacity: 0; }
+
+    /* hybrid (satellite-ish) palette */
+    .hybrid .base-map .land { fill: #5d6072; }
+    .hybrid .base-map .blk { fill: #3b3f63; }
+    .hybrid .base-map .bld { stroke: #26294a; stroke-width: 1.5; }
+    .hybrid .base-map .bld.b1 { fill: #8e92ab; } .hybrid .base-map .bld.b2 { fill: #c9cad6; }
+    .hybrid .base-map .bld.b3 { fill: #5b6088; } .hybrid .base-map .bld.b4 { fill: #a77d7a; }
+    .hybrid .base-map .park { fill: #44593f; }
+    .hybrid .base-map .water { fill: #2e4f73; }
+    .hybrid .base-map .trees { display: inline; }
+    .hybrid .base-map .trees .t1 { fill: #3a5233; } .hybrid .base-map .trees .t2 { fill: #4d6a3e; } .hybrid .base-map .trees .t3 { fill: #2c3f2a; }
+    .hybrid .base-map .maj-c { stroke: #4a4d5f; }
+    .hybrid .base-map .maj { stroke: #7d8090; stroke-opacity: .7; }
+    .hybrid .base-map .lbl { fill: #fff; stroke: #20222e; stroke-width: 3px; }
+    .hybrid .base-map .poi-l { fill: #fff; }
+    .hybrid .base-map .tex { opacity: .22; mix-blend-mode: overlay; }
+    .hybrid .map-wrap { background: #4a4d60; }
+
+    /* analysis overlay svg */
+    .ov .ring { fill: none; stroke: #6d6d6d; stroke-width: 1.8; }
+    .hybrid .ov .ring { stroke: #e8e8e8; }
+    .ov .flood { fill: #3d6fd8; fill-opacity: .38; stroke: #2a54b0; stroke-opacity: .5; }
+    .ov .flood.deep { fill: #23409a; fill-opacity: .45; }
+
+    /* ---------- bottom data table ---------- */
+    .data { height: 132px; flex: none; border-top: 3px solid #e4002b; background: #fff; overflow: auto; }
+    .data table { border-collapse: collapse; min-width: 1240px; }
+    .data th { font-weight: 400; font-size: 13px; color: #333; text-align: left; padding: 9px 10px 6px 16px; white-space: nowrap; }
+    .data td { padding: 10px 10px 10px 16px; font-size: 13px; color: #333; white-space: nowrap; }
+    .data td .v { display: inline-flex; align-items: center; }
+    .data .none td { color: #999; font-size: 12px; }
   </style>
 </head>
-<body>
-  <div class="toolbar">
-    <form id="form-search-map" action="{{ url_for('search') }}" method="post" style="display:flex; gap:10px; flex:1;">
-      <input type="text" id="map-search-input" name="address" placeholder="Search by address" value="{{ state.address }}" autocomplete="off">
-      <button type="submit" id="btn-search-map">Search</button>
+<body class="{{ 'hybrid' if state.hybrid_view else '' }}">
+  {% set display_address = state.address.replace(' (confirmed location)', '') %}
+  <div class="topbar">
+    <form id="form-search-map" action="{{ url_for('search') }}" method="post">
+      <div class="search-pill">
+        <button type="submit" id="btn-search-map" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/></svg>
+        </button>
+        <span class="caret-sm"></span>
+        <input type="text" id="map-search-input" name="address" placeholder="Search by address, location, postcode" value="{{ state.address }}" autocomplete="off">
+      </div>
     </form>
-    <form id="form-ad-hoc" action="{{ url_for('ad_hoc_analysis') }}" method="post">
-      <button type="submit" id="btn-ad-hoc-analysis" class="secondary {{ 'active' if state.ad_hoc_analysis else '' }}">Ad Hoc Analysis</button>
-    </form>
-    <form id="form-hybrid" action="{{ url_for('hybrid_view') }}" method="post">
-      <button type="submit" id="btn-hybrid-view" class="secondary {{ 'active' if state.hybrid_view else '' }}">Hybrid</button>
-    </form>
+    <button type="button" class="analysis-pill" onclick="return false;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      ANALYSIS
+    </button>
+    <div class="tools">
+      <div class="tool-group">
+        <button type="button" aria-label="Circle"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg></button>
+        <button type="button" aria-label="Rectangle"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><rect x="4.5" y="4.5" width="15" height="15" rx="1"/></svg></button>
+        <button type="button" aria-label="Polygon"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6"><path d="M6 5h12l-2 7 3 7H5l2-7z"/><rect x="4" y="3" width="4" height="4" fill="#fff"/><rect x="16" y="3" width="4" height="4" fill="#fff"/><rect x="17" y="17" width="4" height="4" fill="#fff"/><rect x="3" y="17" width="4" height="4" fill="#fff"/></svg></button>
+        <button type="button" aria-label="Line"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6"><path d="M5 18l6-6 3 3 5-8"/><circle cx="5" cy="18" r="2" fill="#fff"/><circle cx="11" cy="12" r="2" fill="#fff"/><circle cx="14" cy="15" r="2" fill="#fff"/><circle cx="19" cy="7" r="2" fill="#fff"/></svg></button>
+        <button type="button" aria-label="Measure"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><path d="M3 8v8M21 8v8M3 12h18M7 10v4M11 10v4M15 10v4M19 10v4"/></svg></button>
+      </div>
+      <button type="button" class="user-btn" aria-label="Account"><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2"><circle cx="16" cy="16" r="13"/><circle cx="16" cy="12.5" r="4.5"/><path d="M7.5 25c2-4 5-5.5 8.5-5.5s6.5 1.5 8.5 5.5"/></svg></button>
+    </div>
+  </div>
+  <div class="redline"></div>
+
+  <div class="main">
+    <aside class="panel">
+      <div class="tabs">
+        <button type="button" class="active">SECTIONS</button>
+        <button type="button">LAYERS</button>
+      </div>
+
+      <div class="card">
+        <svg class="ico" viewBox="0 0 34 34"><circle cx="17" cy="17" r="16" fill="#efe6f2"/><path d="M17 7c-4.4 0-8 3.4-8 7.7 0 5.6 8 13.3 8 13.3s8-7.7 8-13.3C25 10.4 21.4 7 17 7z" fill="#5b2a6e"/><circle cx="17" cy="15" r="3" fill="#fff"/></svg>
+        <div class="txt">
+          <div class="ttl">Ad Hoc Analyses</div>
+          <div class="sub">Risk count &nbsp;{{ 1 if (state.ad_hoc_analysis and state.address) else 0 }}</div>
+        </div>
+        <form id="form-ad-hoc" action="{{ url_for('ad_hoc_analysis') }}" method="post" style="margin:0">
+          <button type="submit" id="btn-ad-hoc-analysis" class="{{ 'active' if state.ad_hoc_analysis else '' }}" aria-label="Ad Hoc Analysis">
+            <svg viewBox="0 0 24 24" stroke="#e4002b" stroke-width="2.6" stroke-linecap="square"><path d="M12 3v18M3 12h18"/></svg>
+          </button>
+        </form>
+        <button type="button" class="kebab" aria-label="More"><svg viewBox="0 0 4 16" fill="#555"><circle cx="2" cy="2" r="1.6"/><circle cx="2" cy="8" r="1.6"/><circle cx="2" cy="14" r="1.6"/></svg></button>
+      </div>
+
+      {% if state.address and state.ad_hoc_analysis %}
+      <div class="loc-card">
+        <div class="loc-row">
+          <svg class="ico" viewBox="0 0 26 32"><path d="M13 1C6.4 1 1 6.1 1 12.5 1 21 13 31 13 31s12-10 12-18.5C25 6.1 19.6 1 13 1z" fill="#5b2a6e"/><text x="13" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Segoe UI, Arial">A</text></svg>
+          <div class="txt" style="flex:1">
+            <div class="loc-addr">{{ display_address }}, London</div>
+            <div class="loc-sub">NW3 1NL</div>
+          </div>
+          <button type="button" class="kebab" aria-label="More"><svg viewBox="0 0 4 16" fill="#555"><circle cx="2" cy="2" r="1.6"/><circle cx="2" cy="8" r="1.6"/><circle cx="2" cy="14" r="1.6"/></svg></button>
+        </div>
+        <div class="loc-badge"><span class="issue">ISSUE</span></div>
+      </div>
+      <div class="peril-h">Highest peril score</div>
+      <div class="peril"><span class="nm">Subsidence</span><span class="bar red"></span>7</div>
+      <div class="actions">
+        <button type="button" class="act"><span class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><rect x="3" y="5" width="18" height="14"/><path d="M3 9h18M3 13h18M8 9v10"/></svg></span>Show Details</button>
+        <button type="button" class="act"><span class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><circle cx="12" cy="6" r="2.5"/><path d="M9 21v-6H8v-4.5a4 4 0 0 1 8 0V15h-1v6M5 19c0 1.2 3.1 2 7 2s7-.8 7-2"/></svg></span>Show Street View</button>
+        <button type="button" class="act"><span class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><path d="M7 8V3h10v5M5 17H3v-8h18v8h-2"/><rect x="7" y="14" width="10" height="7"/></svg></span>Print Summary</button>
+        <button type="button" class="act"><span class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/></svg></span>Remove Analysis</button>
+      </div>
+      {% elif state.address %}
+      <div class="empty-note">Location found: <strong>{{ display_address }}</strong>.<br>Select <strong style="color:#e4002b">+</strong> to run an ad hoc analysis on this location.</div>
+      {% else %}
+      <div class="empty-note">Search for an address, location or postcode to begin.</div>
+      {% endif %}
+
+      <div class="layers-h">Overview</div>
+      <div class="layer-row">
+        <svg class="lic" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2z"/><path d="M9 3v16M15 5v16"/></svg>
+        <span class="lname">Base Map</span>
+        <form id="form-hybrid" action="{{ url_for('hybrid_view') }}" method="post">
+          <button type="submit" id="btn-hybrid-view" class="dd {{ 'active' if state.hybrid_view else '' }}"><span>{{ 'Hybrid' if state.hybrid_view else 'Road Map' }}</span><span class="dcaret"></span></button>
+        </form>
+      </div>
+      <div class="layer-row">
+        <svg class="lic" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+        <span class="lname">Overlay</span>
+        <form id="form-overlay" action="{{ url_for('overlay') }}" method="post">
+          <button type="submit" id="btn-select-overlay" class="dd {{ 'active' if state.overlay else '' }}">{% if state.overlay %}<span>River Flood</span>{% else %}<span class="ph">Type to filter</span>{% endif %}<span class="dcaret"></span></button>
+        </form>
+      </div>
+      {% if state.overlay %}
+      <div class="legend">
+        <div class="lt">River Flood</div>
+        <div class="op">Opacity</div>
+        <div class="slider"></div>
+        <div class="sw"><span style="background:#fff"></span>Very low</div>
+        <div class="sw"><span style="background:#c9cfe6"></span>Low</div>
+        <div class="sw"><span style="background:#8f9bd1"></span>Medium</div>
+        <div class="sw"><span style="background:#5662a8"></span>High</div>
+        <div class="sw"><span style="background:#2f3a86"></span>Very high</div>
+      </div>
+      {% endif %}
+      <div class="tbl-btn"><button type="button" aria-label="Data table"><svg viewBox="0 0 24 24" fill="none" stroke="#3a97c9" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M8 9v11M13 9v11M18 9v11"/></svg></button></div>
+    </aside>
+
+    <section class="map-wrap">
+      <div id="map-canvas" class="map-area {{ 'hybrid' if state.hybrid_view else '' }}">
+        {{ base_map_svg }}
+        <svg class="ov" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          {% if state.overlay %}
+          <g id="overlay-badge">
+            <path class="flood" d="M1230 -20 C1290 60 1350 130 1430 190 C1500 240 1560 300 1640 370 L1640 -20Z"/>
+            <path class="flood deep" d="M1330 -20 C1390 80 1440 120 1500 170 C1560 220 1600 260 1640 330 L1640 -20Z"/>
+            <path class="flood" d="M1085 235 C1135 195 1205 228 1214 300 C1224 380 1172 432 1120 412 C1068 392 1042 300 1085 235Z"/>
+            <path class="flood deep" d="M1118 290 C1140 270 1175 290 1172 330 C1168 362 1135 372 1118 352 C1102 334 1102 306 1118 290Z"/>
+            <path class="flood" d="M1098 560 C1160 538 1232 580 1222 650 C1212 722 1130 742 1090 700 C1048 652 1058 580 1098 560Z"/>
+            <path class="flood" d="M1500 450 C1560 500 1600 560 1640 620 L1640 420 C1590 420 1540 430 1500 450Z"/>
+            <path class="flood" d="M110 870 C190 815 290 840 330 900 C310 965 200 990 125 955Z"/>
+          </g>
+          {% endif %}
+          {% if state.address and state.ad_hoc_analysis %}
+          <circle class="ring" cx="800" cy="480" r="105"/>
+          <circle class="ring" cx="800" cy="480" r="235"/>
+          <circle class="ring" cx="800" cy="480" r="430"/>
+          <circle class="ring" cx="800" cy="480" r="640"/>
+          {% endif %}
+          {% if state.address %}
+          <g id="map-pin">
+            <path d="M780 456 L812 446 L826 474 L796 486Z" fill="#6c2b86" fill-opacity=".55" stroke="#5b2a6e" stroke-width="1.5"/>
+            <path d="M800 498 C795 486 784 478 784 466 A16 16 0 1 1 816 466 C816 478 805 486 800 498Z" fill="#5b2a6e" stroke="#fff" stroke-width="2"/>
+            <text x="800" y="471" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="Segoe UI, Arial">A</text>
+          </g>
+          {% endif %}
+        </svg>
+      </div>
+      <button type="button" class="collapse" aria-label="Collapse panel"><svg viewBox="0 0 10 14" fill="none" stroke="#333" stroke-width="2"><path d="M8 1L2 7l6 6"/></svg></button>
+      {% if state.overlay %}<div class="map-chip">OVERLAY: RIVER FLOOD</div>{% endif %}
+      <div class="zoom"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">&minus;</button></div>
+      <div class="attrib">Keyboard shortcuts<span>Map data &copy;2026 Sample Mapping</span><span>{% if state.hybrid_view %}Imagery &copy;2026 Sample Imagery{% else %}50 m{% endif %}</span><span>Terms</span></div>
+    </section>
   </div>
 
-  <div id="map-canvas" class="map-area {{ 'hybrid' if state.hybrid_view else '' }}">
-    {% if state.address %}<div id="map-pin">&#128205;</div>{% endif %}
-    {% if state.overlay %}<div id="overlay-badge" class="overlay-badge">Overlay: Flood Risk</div>{% endif %}
-  </div>
-
-  <div class="panel">
-    <h2>Overview</h2>
-    <form id="form-overlay" action="{{ url_for('overlay') }}" method="post">
-      <button type="submit" id="btn-select-overlay" class="secondary {{ 'active' if state.overlay else '' }}">Select Overlay</button>
-    </form>
+  <div class="data">
+    <table>
+      <thead><tr>
+        <th>Location</th><th>Health</th><th>Latitude</th><th>Longitude</th><th>Total Flood</th><th>River</th><th>Flood Prox</th><th>Surface</th><th>Coastal</th><th>Ground</th><th>Canal</th><th>Dam</th><th>River Def</th><th>Subsidence</th><th>Storm</th>
+      </tr></thead>
+      <tbody>
+      {% if state.address and state.ad_hoc_analysis %}
+        <tr>
+          <td><svg width="22" height="27" viewBox="0 0 26 32"><path d="M13 1C6.4 1 1 6.1 1 12.5 1 21 13 31 13 31s12-10 12-18.5C25 6.1 19.6 1 13 1z" fill="#5b2a6e"/><text x="13" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Segoe UI, Arial">A</text></svg></td>
+          <td><span class="issue">ISSUE</span></td>
+          <td><span class="v"><span class="bar grey"></span>51.5541</span></td>
+          <td><span class="v"><span class="bar grey"></span>-0.1708</span></td>
+          <td><span class="v"><span class="bar teal"></span>0</span></td>
+          <td><span class="v"><span class="bar teal"></span>0</span></td>
+          <td><span class="v"><span class="bar red"></span>Yes</span></td>
+          <td><span class="v"><span class="bar teal"></span>0</span></td>
+          <td><span class="v"><span class="bar teal"></span>0</span></td>
+          <td><span class="v"><span class="bar teal"></span>Low</span></td>
+          <td><span class="v"><span class="bar teal"></span>No</span></td>
+          <td><span class="v"><span class="bar teal"></span>0</span></td>
+          <td><span class="v"><span class="bar grey"></span>None</span></td>
+          <td><span class="v"><span class="bar red"></span><span style="background:#fff6c4;padding:1px 14px">7</span></span></td>
+          <td><span class="v"><span class="bar teal"></span>Very Low</span></td>
+        </tr>
+      {% else %}
+        <tr class="none"><td colspan="15">No analyses to display. Search for a location and add an ad hoc analysis.</td></tr>
+      {% endif %}
+      </tbody>
+    </table>
   </div>
 </body>
 </html>
